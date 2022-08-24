@@ -1,0 +1,15 @@
+{
+  "eslint-disable": {
+    "prefix": "eslint-disable",
+    "body": [
+      "/* eslint-disable ${1|INSERT_RULES|} */",
+      "$0/* eslint-enable ${1} */"
+    ],
+    "description": "ESLint disable wrapper"
+  },
+  "eslint-disable-next-line": {
+    "prefix": "eslint-disable-next-line",
+    "body": ["// eslint-disable-next-line ${1|INSERT_RULES|}"],
+    "description": "ESLint disable next line"
+  }
+}

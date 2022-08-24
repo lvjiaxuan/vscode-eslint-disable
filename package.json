@@ -24,7 +24,27 @@
         "title": "Hello World"
       }
     ],
-    "snippets": []
+    "snippets": [
+      {
+        "language": "javascript",
+        "path": "./snippets/snippets.json"
+      },
+      {
+        "language": "javascriptreact",
+        "path": "./snippets/snippets.json"
+      },
+      {
+        "language": "typescript",
+        "path": "./snippets/snippets.json"
+      },
+      {
+        "language": "typescriptreact",
+        "path": "./snippets/snippets.json"
+      }
+    ],
+    "menus": {
+      "editor/context": []
+    }
   },
   "scripts": {
     "compile": "tsup src/extension.ts --external=vscode --format=cjs --clean",
