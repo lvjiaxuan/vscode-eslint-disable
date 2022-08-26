@@ -2,7 +2,7 @@
   "name": "eslint-disable",
   "displayName": "eslint-disable",
   "version": "0.0.1",
-  "description": "eslint disable snippets based on config rules",
+  "description": "disable eslint rules in various ways",
   "categories": [
     "Other",
     "Snippets"
@@ -15,13 +15,26 @@
   "icon": "",
   "publisher": "lvjiaxuan",
   "activationEvents": [
-    "onCommand:eslint-disable.helloWorld"
+    "onLanguage:javascript",
+    "onLanguage:typescript"
   ],
   "contributes": {
     "commands": [
       {
         "command": "eslint-disable.helloWorld",
-        "title": "Hello World"
+        "title": "eslint-disable: Hello World"
+      },
+      {
+        "command": "eslint-disable.disableIT",
+        "title": "eslint-disable: disable it"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "eslint-disable.disableIT",
+        "key": "ctrl+alt+d",
+        "mac": "ctrl+alt+d",
+        "when": "editorTextFocus"
       }
     ],
     "snippets": [
@@ -41,10 +54,7 @@
         "language": "typescriptreact",
         "path": "./snippets/snippets.json"
       }
-    ],
-    "menus": {
-      "editor/context": []
-    }
+    ]
   },
   "scripts": {
     "compile": "tsup src/extension.ts --external=vscode --format=cjs --clean",
@@ -56,21 +66,19 @@
   },
   "devDependencies": {
     "@lvjiaxuan/eslint-config": "^0.0.20",
-    "@types/glob": "^7.2.0",
-    "@types/mocha": "^9.1.1",
-    "@types/node": "18.x",
+    "@types/eslint": "^8.4.6",
     "@types/vscode": "^1.70.0",
-    "@typescript-eslint/eslint-plugin": "^5.34.0",
-    "@typescript-eslint/parser": "^5.34.0",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
     "@vscode/test-electron": "^2.1.5",
-    "eslint": "^8.22.0",
-    "glob": "^8.0.3",
-    "mocha": "^10.0.0",
     "tsup": "^6.2.2",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.2"
   },
-  "license": "SEE LICENSE IN ./LICENSE",
+  "license": "MIT",
   "eslintConfig": {
     "extends": "@lvjiaxuan"
+  },
+  "dependencies": {
+    "eslint": "^8.22.0"
   }
 }

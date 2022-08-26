@@ -1,3 +1,12 @@
+# WIP
+
+- [ ] select lines and disable it with:
+  - [ ] right click menu.
+  - [x] Cmd.
+  - [x] Keyboard shortcuts(ctrl+alt+d).
+- [ ] snippets based on rules config.
+
+***
 # eslint-disable README
 
 This is the README for your extension "eslint-disable". After writing up a brief description, we recommend including the following sections.
@@ -11,11 +20,6 @@ For example if there is an image subfolder under your extension project workspac
 \!\[feature X\]\(images/feature-x.png\)
 
 > Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-1. eslint-disabled snippets based rules config
-2. select lines and right click to select eslint-disabled
-3. use settings
-4. based on rules config
 
 ## Requirements
 
