@@ -1,4 +1,4 @@
-import { ExtensionContext, Position, ProgressLocation, SnippetString, StatusBarAlignment, StatusBarItem, commands, window, workspace } from 'vscode'
+import { type ExtensionContext, Position, SnippetString, StatusBarAlignment, StatusBarItem, commands, window, workspace } from 'vscode'
 import log from './log'
 import { ESLint } from 'eslint'
 import { getTextBylines } from './utils'
@@ -40,7 +40,12 @@ const disposes = [
 
     const activeTextEditor = window.activeTextEditor
     if (!activeTextEditor || !eslint) {
-      log('no `activeTextEditor` exist.', true)
+      log('no `activeTextEditor` exist.')
+      return
+    }
+
+    if (activeTextEditor.selections.length > 1) {
+      log('Sorry, we can not disable multi-lines for now. Support in later version.', true, 'OK')
       return
     }
 
@@ -53,7 +58,7 @@ const disposes = [
     log('Linting finish.')
     // eslint-disable-next-line require-atomic-updates
     statusBarItem.text = '$(check) Linting finish.'
-    setTimeout(() => statusBarItem.hide(), 2222)
+    setTimeout(() => statusBarItem.hide(), 3000)
 
     const lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
       if (!item.ruleId) return preValue
@@ -66,8 +71,7 @@ const disposes = [
     }, {} as Record<number, string[]>) ?? {}
 
     if (!Object.keys(lineRuleIdsMap).length) {
-      log('Everything is good.')
-      void window.showInformationMessage('Everything is good.', 'OK')
+      log('Everything is good.', true, 'OK')
       return
     }
 
@@ -75,7 +79,7 @@ const disposes = [
 
       const text = getTextBylines(selection.start.line, selection.end.line)
       if (!text) {
-        void window.showInformationMessage('No content to disable.', 'OK')
+        log('No content to disable.', true, 'OK')
         return
       }
 
@@ -85,19 +89,19 @@ const disposes = [
       }
 
       if (selection.isSingleLine) {
-      // Insert at previous line.
+        // Insert at previous line.
         void activeTextEditor.insertSnippet(
           new SnippetString(`// eslint-disable-next-line \${1|${ lineRuleIdsMap[selection.start.line + 1].join('\\, ') }|}\n`),
           new Position(selection.start.line, insertIndex),
         )
       } else {
-      // wrap lines. Press `ctrl+d `to edit rules.
+        // Wrap lines. Press `ctrl+d `to edit rules at between lines.
         void activeTextEditor.insertSnippet(
-          new SnippetString('/* eslint-disable ${1|INSERT_RULES|} */\n'),
+          new SnippetString(`/* eslint-disable \${1|${ lineRuleIdsMap[selection.start.line + 1].join('\\, ') }|} */\n`),
           new Position(selection.start.line, insertIndex),
         )
         void activeTextEditor.insertSnippet(
-          new SnippetString('/* eslint-enable ${1|INSERT_RULES|} */\n'),
+          new SnippetString(`/* eslint-enable \${1|${ lineRuleIdsMap[selection.start.line + 1].join('\\, ') }|} */\n`),
           new Position(selection.end.line + 2, insertIndex),
         )
       }
