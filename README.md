@@ -6,7 +6,10 @@
   - [x] Cmd(`eslint-disable.disableIT`).
   - [x] Keyboard shortcuts(`ctrl` + `alt` + `d`).
 
-> gif to be provided
+
+![](assets/1.gif)
+
+![](assets/2.gif)
 
 ## Requirements
 
@@ -21,3 +24,7 @@ Include if your extension adds any VS Code settings through the `contributes.con
 ## Known Issues
 
 Calling out known issues can help limit users opening duplicate issues against your extension.
+
+## Todo
+
+- Support multi-selection at the same action. 
