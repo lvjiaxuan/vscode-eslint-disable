@@ -1,13 +1,13 @@
-import { type ExtensionContext, Position, ProgressLocation, SnippetString, TextEdit, TextEditor, commands, window, workspace } from 'vscode'
+import { ExtensionContext, Position, ProgressLocation, SnippetString, StatusBarAlignment, StatusBarItem, commands, window, workspace } from 'vscode'
 import log from './log'
 import { ESLint } from 'eslint'
 import { getTextBylines } from './utils'
 
 
-let eslint: ESLint | null
+let eslint: ESLint
+let statusBarItem: StatusBarItem
 
 export function activate(context: ExtensionContext) {
-
   log('eslint-disabled activated!')
 
   eslint = new ESLint({
@@ -21,7 +21,11 @@ export function activate(context: ExtensionContext) {
     },
   })
 
-  context.subscriptions.push(...disposes)
+  statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left)
+
+  context.subscriptions.push(...disposes, statusBarItem)
+
+  log('eslint-disabled initialized!')
 }
 
 // this method is called when your extension is deactivated
@@ -40,40 +44,26 @@ const disposes = [
       return
     }
 
-    const lineRuleIdsMap = await window.withProgress({
-      cancellable: false,
-      location: ProgressLocation.Notification,
-      title: 'Progress Notification',
-    }, async (progress, token) => {
+    log('Start linting hole file content...')
+    statusBarItem.text = '$(loading~spin) Start linting hole file content...'
+    statusBarItem.show()
 
-      log('Start linting hole file content...')
-      let count = 5
-      progress.report({ increment: 5, message: 'Start linting hole file content...' })
+    const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath)
 
-      const fakeIncrement = setInterval(() => {
-        progress.report({ increment: count++, message: 'Still going...' })
-        if (count == 95) clearInterval(fakeIncrement)
-      }, 1000)
+    log('Linting finish.')
+    // eslint-disable-next-line require-atomic-updates
+    statusBarItem.text = '$(check) Linting finish.'
+    setTimeout(() => statusBarItem.hide(), 2222)
 
-      const results = await eslint!.lintFiles(activeTextEditor.document.uri.fsPath)
-
-      log('Linting finish...')
-      clearInterval(fakeIncrement)
-      progress.report({ increment: 99, message: 'Linting finish.' })
-
-      const lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
-        if (!item.ruleId) return preValue
-        if (!preValue[item.line]) {
-          preValue[item.line] = [ item.ruleId ]
-        } else {
-          preValue[item.line] = [ ...preValue[item.line], item.ruleId ]
-        }
-        return preValue
-      }, {} as Record<number, string[]>) ?? {}
-
-      // eslint-disable-next-line no-promise-executor-return
-      return new Promise<typeof lineRuleIdsMap>(resolve => setTimeout(() => resolve(lineRuleIdsMap), 500))
-    })
+    const lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
+      if (!item.ruleId) return preValue
+      if (!preValue[item.line]) {
+        preValue[item.line] = [ item.ruleId ]
+      } else {
+        preValue[item.line] = [ ...preValue[item.line], item.ruleId ]
+      }
+      return preValue
+    }, {} as Record<number, string[]>) ?? {}
 
     if (!Object.keys(lineRuleIdsMap).length) {
       log('Everything is good.')
@@ -117,11 +107,6 @@ const disposes = [
 
   // hello world
   commands.registerCommand('eslint-disable.helloWorld', () => {
-    const p = window.showInformationMessage('Hello World from eslint-disable!!!')
-    void p.then(r => {
-      return r
-    })
-    // ...
+    void window.showInformationMessage('Hello World from eslint-disable!!!')
   }),
 ]
-
