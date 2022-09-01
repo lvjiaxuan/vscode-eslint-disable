@@ -8,4 +8,7 @@ const getNowFormat = () => {
 }
 
 export { channel }
-export default (message: string) => channel.appendLine(`[${ getNowFormat() }] - ${ message }`)
+export default (message: string, showInformationMessage = false) => {
+  channel.appendLine(`[${ getNowFormat() }] - ${ message }`)
+  showInformationMessage && window.showInformationMessage(message)
+}
