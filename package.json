@@ -9,10 +9,10 @@
   ],
   "main": "./dist/extension.cjs",
   "engines": {
-    "vscode": "^1.70.0"
+    "vscode": "^1.71.0"
   },
   "type": "module",
-  "icon": "",
+  "icon": "./assets/icon.png",
   "publisher": "lvjiaxuan",
   "activationEvents": [
     "onLanguage:javascript",
@@ -79,6 +79,10 @@
     "pretest": "nr compile && nr lint",
     "lint": "eslint . --fix",
     "test": "node ./out/test/runTest.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lvjiaxuan/eslint-disable"
   },
   "devDependencies": {
     "@lvjiaxuan/eslint-config": "^0.0.21",
