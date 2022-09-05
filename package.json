@@ -73,8 +73,7 @@
     "@typescript-eslint/parser": "^5.35.1",
     "@vscode/test-electron": "^2.1.5",
     "tsup": "^6.2.3",
-    "typescript": "^4.8.2",
-    "vsce": "^2.11.0"
+    "typescript": "^4.8.2"
   },
   "license": "MIT",
   "eslintConfig": {
