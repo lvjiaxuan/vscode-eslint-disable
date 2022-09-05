@@ -2,9 +2,9 @@
 
 - [x] Based on eslint's results of current file.
 - [x] Select one or multiple lines, and disable it with:
-  - [ ] Right click menu.
+  - [x] The editor context menu.
   - [x] Cmd(`eslint-disable.disableIT`).
-  - [x] Keyboard shortcuts(`ctrl` + `alt` + `d`).
+  - [x] Keyboard shortcuts(`ctrl + alt + d`).
 
 
 ![](assets/1.gif)

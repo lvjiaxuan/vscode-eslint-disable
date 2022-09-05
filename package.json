@@ -29,6 +29,12 @@
         "title": "eslint-disable: disable it"
       }
     ],
+    "menus": {
+      "editor/context": [{
+        "command": "eslint-disable.disableIT",
+        "group": "1_modification"
+      }]
+    },
     "keybindings": [
       {
         "command": "eslint-disable.disableIT",
