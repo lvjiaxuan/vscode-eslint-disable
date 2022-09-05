@@ -7,12 +7,20 @@
     "Other",
     "Snippets"
   ],
-  "main": "./dist/extension.cjs",
+  "main": "./dist/extension.js",
   "engines": {
     "vscode": "^1.71.0"
   },
-  "type": "module",
-  "icon": "./assets/icon.png",
+  "scripts": {
+    "compile": "tsup src/extension.ts --external=vscode --format=cjs --shims=false --clean",
+    "dev": "nr compile --watch",
+    "vscode:prepublish": "nr compile",
+    "pretest": "nr compile && nr lint",
+    "lint": "eslint . --fix",
+    "pack": "vsce package --no-dependencies",
+    "publish": "vsce publish --no-dependencies"
+  },
+  "icon": "assets/icon.png",
   "publisher": "lvjiaxuan",
   "activationEvents": [
     "onLanguage:javascript",
@@ -71,14 +79,6 @@
         "path": "./snippets/snippets.json"
       }
     ]
-  },
-  "scripts": {
-    "compile": "tsup src/extension.ts --external=vscode --format=cjs --clean",
-    "dev": "nr compile --watch",
-    "vscode:prepublish": "nr compile",
-    "pretest": "nr compile && nr lint",
-    "lint": "eslint . --fix",
-    "test": "node ./out/test/runTest.js"
   },
   "repository": {
     "type": "git",
