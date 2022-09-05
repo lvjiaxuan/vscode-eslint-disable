@@ -1,6 +1,6 @@
 ## Features
 
-- [x] Based on eslint's results of current file.
+- [x] Based on ESlint's results of current file.
 - [x] Select one or multiple lines, and disable it with:
   - [x] The editor context menu.
   - [x] Cmd(`eslint-disable.disableIT`).
@@ -26,4 +26,4 @@ Calling out known issues can help limit users opening duplicate issues against y
 
 ## Todo
 
-- Support multi-selections at the same action. 
+- Support multi-selections disable at the same action. 
