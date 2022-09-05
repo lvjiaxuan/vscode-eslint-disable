@@ -6,7 +6,6 @@
   - [x] Cmd(`eslint-disable.disableIT`).
   - [x] Keyboard shortcuts(`ctrl + alt + d`).
 
-
 ![](assets/1.gif)
 
 ![](assets/2.gif)

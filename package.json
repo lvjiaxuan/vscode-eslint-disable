@@ -29,6 +29,16 @@
         "title": "eslint-disable: disable it"
       }
     ],
+    "configuration": {
+      "title": "eslint-disable",
+      "properties": {
+        "eslint-disable.disable": {
+          "type": "boolean",
+          "default": false,
+          "description": "Disable the eslint-disable extension."
+        }
+      }
+    },
     "menus": {
       "editor/context": [{
         "command": "eslint-disable.disableIT",

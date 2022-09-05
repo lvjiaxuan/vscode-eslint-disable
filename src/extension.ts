@@ -10,6 +10,13 @@ let statusBarItem: StatusBarItem
 export function activate(context: ExtensionContext) {
   log('eslint-disabled activated!')
 
+  const config = workspace.getConfiguration('eslint-disable')
+  const disabled = config.get('disable', false)
+  if (disabled) {
+    log('eslint-disabled is disabled.')
+    return
+  }
+
   eslint = new ESLint({
     overrideConfig: {
       overrides: [
