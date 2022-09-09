@@ -9,7 +9,7 @@
   ],
   "main": "./dist/extension.js",
   "engines": {
-    "vscode": "^1.71.0"
+    "vscode": "^1.60.0"
   },
   "scripts": {
     "compile": "tsup src/extension.ts --external=vscode --format=cjs --shims=false --clean",
@@ -17,8 +17,8 @@
     "vscode:prepublish": "nr compile",
     "pretest": "nr compile && nr lint",
     "lint": "eslint . --fix",
-    "pack": "vsce package --no-dependencies",
-    "publish": "vsce publish --no-dependencies"
+    "pack": "vsce package",
+    "publish": "vsce publish"
   },
   "icon": "assets/icon.png",
   "publisher": "lvjiaxuan",
@@ -48,10 +48,12 @@
       }
     },
     "menus": {
-      "editor/context": [{
-        "command": "eslint-disable.disableIT",
-        "group": "1_modification"
-      }]
+      "editor/context": [
+        {
+          "command": "eslint-disable.disableIT",
+          "group": "1_modification"
+        }
+      ]
     },
     "keybindings": [
       {
@@ -88,10 +90,11 @@
     "@lvjiaxuan/eslint-config": "^0.0.21",
     "@types/eslint": "^8.4.6",
     "@types/node": "^18.7.14",
-    "@types/vscode": "^1.71.0",
+    "@types/vscode": "^1.60.0",
     "@typescript-eslint/eslint-plugin": "^5.36.1",
     "@typescript-eslint/parser": "^5.36.1",
     "@vscode/test-electron": "^2.1.5",
+    "eslint": "^8.23.0",
     "tsup": "^6.2.3",
     "typescript": "^4.8.2"
   },
@@ -100,6 +103,5 @@
     "extends": "@lvjiaxuan"
   },
   "dependencies": {
-    "eslint": "^8.23.0"
   }
 }

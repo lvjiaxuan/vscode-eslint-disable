@@ -1,8 +1,7 @@
 import { type ExtensionContext, Position, SnippetString, StatusBarAlignment, StatusBarItem, commands, window, workspace } from 'vscode'
 import log from './log'
 import { ESLint } from 'eslint'
-import { getTextBylines } from './utils'
-
+import { findEslint, getTextBylines } from './utils'
 
 let eslint: ESLint
 let statusBarItem: StatusBarItem
@@ -31,6 +30,8 @@ export function activate(context: ExtensionContext) {
   statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left)
 
   context.subscriptions.push(...disposes, statusBarItem)
+
+  void findEslint(workspace.workspaceFolders![0].uri.fsPath).then(c => log(c))
 
   log('eslint-disabled initialized!')
 }
