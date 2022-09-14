@@ -1,5 +1,4 @@
 import vscode from 'vscode'
-import path from 'path'
 import fs from 'fs'
 
 export const getTextBylines = (startLine: number, endLine?: number) =>
@@ -10,7 +9,7 @@ export const getTextBylines = (startLine: number, endLine?: number) =>
     ),
   )
 
-function existFile(file: string): Promise<boolean> {
+export function existFile(file: string): Promise<boolean> {
   return new Promise<boolean>((resolve, _reject) => {
     fs.stat(file, (error, stats) => {
       if (error !== null) {

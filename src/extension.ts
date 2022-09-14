@@ -1,12 +1,14 @@
 import { type ExtensionContext, Position, SnippetString, StatusBarAlignment, StatusBarItem, commands, window, workspace } from 'vscode'
 import log from './log'
-import { ESLint } from 'eslint'
-import { findEslint, getTextBylines } from './utils'
+import type { ESLint } from 'eslint'
+import { getTextBylines } from './utils'
+import { workspacePath } from './global'
+import { constructESLint } from './eslint'
 
 let eslint: ESLint
 let statusBarItem: StatusBarItem
 
-export function activate(context: ExtensionContext) {
+export async function activate(context: ExtensionContext) {
   log('eslint-disabled activated!')
 
   const config = workspace.getConfiguration('eslint-disable')
@@ -16,12 +18,17 @@ export function activate(context: ExtensionContext) {
     return
   }
 
-  eslint = new ESLint({
+  if (!workspacePath) {
+    log('No `workspacePath` found.')
+    return
+  }
+
+  eslint = await constructESLint({
     overrideConfig: {
       overrides: [
         {
           files: [ '*.ts', '*.d.ts', '*.tsx', '*.vue' ],
-          parserOptions: { tsconfigRootDir: workspace.workspaceFolders?.[0].uri.fsPath },
+          parserOptions: { tsconfigRootDir: workspacePath },
         },
       ],
     },
@@ -31,14 +38,12 @@ export function activate(context: ExtensionContext) {
 
   context.subscriptions.push(...disposes, statusBarItem)
 
-  void findEslint(workspace.workspaceFolders![0].uri.fsPath).then(c => log(c))
-
   log('eslint-disabled initialized!')
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-  //
+  // ...
 }
 
 const disposes = [
@@ -54,6 +59,11 @@ const disposes = [
 
     if (activeTextEditor.selections.length > 1) {
       log('Sorry, we can not disable multi-lines for now. Support in later version.', true, 'OK')
+      return
+    }
+
+    if (!eslint) {
+      log('ESLint library is pending.')
       return
     }
 

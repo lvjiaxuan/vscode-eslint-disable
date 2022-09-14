@@ -9,7 +9,7 @@ const getNowFormat = () => {
 
 export { channel }
 export default (
-  message: string,
+  message = '--',
   showInformationMessage = false,
   ...informationMessage: string[]
 ) => {

@@ -1,6 +1,6 @@
 ## Features
 
-- [x] Based on ESlint's results of current file.
+- [x] Based on ESLint's results of current file.
 - [x] Select one or multiple lines, and disable it with:
   - [x] The editor context menu.
   - [x] Cmd(`eslint-disable.disableIT`).
@@ -18,7 +18,7 @@
 
 Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
 
- - [ ] `eslint-disable.enable`: Enable/disable this extension.
+ - [ ] `eslint-disable.enable`: Enable/Disable this extension.
 
 ## Known Issues
 
