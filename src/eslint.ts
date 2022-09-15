@@ -24,7 +24,6 @@ const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspace
           }))),
     ).then(results => {
       const agent = results.filter(({ status }) => status === 'fulfilled')[0] as PromiseFulfilledResult<PKG_MANAGERS>
-
       return Files.resolve('eslint', agent.value.path, workspacePath, message => { /**/ })
     }).catch(() => {
       log('Failed to resolve global ESLint. Please instal ESLint first.')
@@ -34,7 +33,7 @@ const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspace
 
 export const constructESLint = async (options?: ESLint.Options) => {
   const eslintPath = await resolveESLintPath()
-  const eslintModule = await import('file://' + path.join(eslintPath)) as {
+  const eslintModule = await import(path.join(eslintPath)) as {
     ESLint: { new(options?: ESLint.Options): ESLint }
   }
 

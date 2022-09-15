@@ -16,7 +16,6 @@ export function existFile(file: string): Promise<boolean> {
         resolve(false)
       }
       resolve(stats.isFile())
-
     })
   })
 }
