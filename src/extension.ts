@@ -114,12 +114,18 @@ const disposes = [
         )
       } else {
         // Wrap lines. Press `ctrl+d `to edit rules at between lines.
+
+        const ruleIDSet = new Set<string>()
+        for (const line in lineRuleIdsMap) {
+          lineRuleIdsMap[line].forEach(item => ruleIDSet.add(item))
+        }
+
         void activeTextEditor.insertSnippet(
-          new SnippetString(`/* eslint-disable \${1|${ lineRuleIdsMap[selection.start.line + 1].join('\\, ') }|} */\n`),
+          new SnippetString(`/* eslint-disable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
           new Position(selection.start.line, insertIndex),
         )
         void activeTextEditor.insertSnippet(
-          new SnippetString(`/* eslint-enable \${1|${ lineRuleIdsMap[selection.start.line + 1].join('\\, ') }|} */\n`),
+          new SnippetString(`/* eslint-enable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
           new Position(selection.end.line + 2, insertIndex),
         )
       }
