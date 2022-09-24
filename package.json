@@ -2,7 +2,7 @@
   "name": "eslint-disable",
   "displayName": "eslint-disable",
   "version": "0.0.1",
-  "description": "Disable ESLint rules according to lines.",
+  "description": "Insert ESLint disable snippets base on selected lines.",
   "categories": [
     "Other",
     "Snippets"
