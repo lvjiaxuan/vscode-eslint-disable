@@ -36,4 +36,6 @@ jobs:
       - run: |
           pnpm i vsce -g
           nci
-          nr publish -p ${{ secrets.VSCE_TOKEN }}
+          vsce publish -p $VSCE_TOKEN
+        env:
+          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
