@@ -1,7 +1,7 @@
 {
   "name": "eslint-disable",
   "displayName": "eslint-disable",
-  "version": "0.0.3",
+  "version": "0.0.2",
   "description": "VSCode extension. Insert ESLint disable snippets base on selected lines.",
   "categories": [
     "Other",
@@ -9,7 +9,7 @@
   ],
   "main": "./dist/extension.js",
   "engines": {
-    "vscode": "^1.60.0"
+    "vscode": "^1.72.0"
   },
   "scripts": {
     "compile": "tsup src/extension.ts --external=vscode --format=cjs --shims=false --clean",
@@ -91,13 +91,13 @@
   "devDependencies": {
     "@lvjiaxuan/eslint-config": "^0.1.0",
     "@types/eslint": "^8.4.6",
-    "@types/node": "^18.8.5",
+    "@types/node": "^18.11.2",
     "@types/vscode": "^1.72.0",
-    "@typescript-eslint/eslint-plugin": "^5.40.0",
-    "@typescript-eslint/parser": "^5.40.0",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "@typescript-eslint/parser": "^5.40.1",
     "@vscode/test-electron": "^2.1.5",
     "eslint": "^8.25.0",
-    "tsup": "^6.2.3",
+    "tsup": "^6.3.0",
     "typescript": "^4.8.4"
   },
   "license": "MIT",
