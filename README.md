@@ -1,4 +1,12 @@
-> A VSCode extension.
+<p align="center">
+  <a href="https://github.com/lvjiaxuan/eslint-disable" target="_blank">
+    <img src="./assets/icon.png" alt="eslint-disable" height="250" width="250" />
+  </a>
+</p>
+
+<hr />
+
+<p align="center">A VSCode extension for disabling ESLint rules.</p>
 
 ## Features
 

@@ -2,7 +2,7 @@
   "name": "eslint-disable",
   "displayName": "eslint-disable",
   "version": "0.0.2",
-  "description": "VSCode extension. Insert ESLint disable snippets base on selected lines.",
+  "description": "A VSCode extension for inserting `esLint-disable` comments base on selected lines.",
   "categories": [
     "Other",
     "Snippets"
