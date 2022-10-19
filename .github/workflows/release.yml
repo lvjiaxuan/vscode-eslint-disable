@@ -38,4 +38,4 @@ jobs:
           nci
           vsce publish -p $VSCE_TOKEN
         env:
-          VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+          VSCE_TOKEN: ${{ secrets.VSCE_PUBLISH }}
