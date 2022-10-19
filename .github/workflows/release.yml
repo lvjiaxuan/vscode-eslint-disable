@@ -34,5 +34,6 @@ jobs:
       - run: pnpm i -g @antfu/ni
 
       - run: |
+          pnpm i vsce -g
           nci
           nr publish
