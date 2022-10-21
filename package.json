@@ -9,7 +9,7 @@
   ],
   "main": "./dist/extension.js",
   "engines": {
-    "vscode": "^1.72.0"
+    "vscode": "^1.60.0"
   },
   "scripts": {
     "compile": "tsup src/extension.ts --external=vscode --format=cjs --shims=false --clean",
@@ -89,13 +89,13 @@
     "url": "https://github.com/lvjiaxuan/eslint-disable"
   },
   "devDependencies": {
-    "@lvjiaxuan/eslint-config": "^0.1.0",
-    "@types/eslint": "^8.4.6",
-    "@types/node": "^18.11.2",
-    "@types/vscode": "^1.72.0",
+    "@lvjiaxuan/eslint-config": "^0.2.1",
+    "@types/eslint": "^8.4.7",
+    "@types/node": "^18.11.3",
+    "@types/vscode": "^1.60.0",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
-    "@vscode/test-electron": "^2.1.5",
+    "@vscode/test-electron": "^2.2.0",
     "eslint": "^8.25.0",
     "tsup": "^6.3.0",
     "typescript": "^4.8.4"
