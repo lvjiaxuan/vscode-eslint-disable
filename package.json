@@ -1,7 +1,7 @@
 {
   "name": "eslint-disable",
   "displayName": "eslint-disable",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A VSCode extension for inserting `eslint-disable` comments base on selected lines.",
   "categories": [
     "Other",
