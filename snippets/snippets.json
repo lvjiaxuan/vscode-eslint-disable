@@ -1,6 +1,6 @@
 {
   "eslint-disable": {
-    "prefix": "eslint-disable",
+    "prefix": "eslint-disable-block",
     "body": [
       "/* eslint-disable ${1|INSERT_RULES|} */",
       "$0/* eslint-enable ${1} */"
