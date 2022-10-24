@@ -8,7 +8,14 @@
 
 <p align="center">A VSCode extension for disabling ESLint rules.</p>
 
+
+[![](https://img.shields.io/visual-studio-marketplace/v/lvjiaxuan.eslint-disable?label=Visual%20Studio%20Marketplace)
+](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
+[![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.eslint-disable?label=Installs)
+](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
+
 ## Features
+
 
 - [x] Based on ESLint's results from current file.
 - [x] Select one or **multiple lines**, and disable it with:
