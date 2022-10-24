@@ -8,7 +8,7 @@ import path from 'path'
 type PKG_MANAGERS = { agent: 'pnpm' | 'npm' | 'yarn', path: string }
 const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspacePath, message => { /**/ })
   .catch(() => {
-    log('Failed to resolve local ESLint. Trying globally...')
+    log('Fail to resolve local ESLint. Trying globally...')
     return Promise.allSettled<PKG_MANAGERS>(
       [ 'pnpm root -g', 'npm root -g', 'yarn global dir' ].map(item =>
         new Promise((resolve, reject) =>
@@ -18,17 +18,23 @@ const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspace
               return
             }
             resolve({
-              agent: item.split(' ')[0] as 'pnpm' | 'npm' | 'yarn',
+              agent: item.split(' ')[0] as PKG_MANAGERS['agent'],
               path: stdout.toString().trim(),
             })
           }))),
-    ).then(results => {
-      const agent = results.filter(({ status }) => status === 'fulfilled')[0] as PromiseFulfilledResult<PKG_MANAGERS>
-      return Files.resolve('eslint', agent.value.path, workspacePath, message => { /**/ })
-    }).catch(() => {
-      log('Failed to resolve global ESLint. Please instal ESLint first.')
-      return Promise.reject('Failed to resolve global ESLint. Please instal ESLint first.')
-    })
+    )
+  }).then(result => {
+
+    if (typeof result === 'string') {
+      return result
+    }
+
+    const agent = result.filter(({ status }) => status === 'fulfilled')[0] as PromiseFulfilledResult<PKG_MANAGERS>
+    return Files.resolve('eslint', agent.value.path, workspacePath, message => { /**/ })
+  }).catch(() => {
+    log('Fail to resolve global ESLint. Please install ESLint first.')
+    // eslint-disable-next-line promise/no-return-wrap
+    return Promise.reject('Fail to resolve global ESLint. Please install ESLint first.')
   })
 
 export const constructESLint = async (options?: ESLint.Options) => {
