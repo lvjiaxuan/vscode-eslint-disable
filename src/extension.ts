@@ -43,7 +43,7 @@ export async function activate(context: ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-  // ...
+  statusBarItem.dispose()
 }
 
 const disposes = [
@@ -71,12 +71,16 @@ const disposes = [
     statusBarItem.text = '$(loading~spin) Start linting hole file content...'
     statusBarItem.show()
 
-    const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath)
+    // FIXME: A workaround.
+    await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
+    const _startTime = Date.now()
+    const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath) // 经调试，实际上是同步代码，所以导致 `statusBarItem.show` 无法立即渲染显示
 
     log('Linting finish.')
+
     // eslint-disable-next-line require-atomic-updates
-    statusBarItem.text = '$(check) Linting finish.'
-    setTimeout(() => statusBarItem.hide(), 3000)
+    statusBarItem.text = `$(check) Linting finish(${ Date.now() - _startTime }ms).`
+    setTimeout(() => statusBarItem.hide(), 5000)
 
     const lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
       if (!item.ruleId) return preValue
@@ -130,7 +134,6 @@ const disposes = [
         )
       }
     })
-
   }),
 
   // hello world
