@@ -102,6 +102,11 @@ const disposes = [
 
     activeTextEditor.selections.forEach(selection => {
 
+      if (!Object.keys(lineRuleIdsMap).some(problemLine =>
+        selection.start.line + 1 <= +problemLine && +problemLine <= selection.end.line + 1)) {
+        log('No problem rules found on selected lines.', true, 'OK')
+        return
+      }
 
       const text = getTextBylines(selection.start.line, selection.end.line)
       if (!text?.replace(/\n|\r/g, '')) {
