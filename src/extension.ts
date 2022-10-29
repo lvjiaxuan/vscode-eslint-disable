@@ -102,15 +102,15 @@ const disposes = [
 
     activeTextEditor.selections.forEach(selection => {
 
-      if (!Object.keys(lineRuleIdsMap).some(problemLine =>
-        selection.start.line + 1 <= +problemLine && +problemLine <= selection.end.line + 1)) {
-        log('No problem rules found on selected lines.', true, 'OK')
-        return
-      }
-
       const text = getTextBylines(selection.start.line, selection.end.line)
       if (!text?.replace(/\n|\r/g, '')) {
         log('No content to disable.', true, 'OK')
+        return
+      }
+
+      if (!Object.keys(lineRuleIdsMap).some(problemLine =>
+        selection.start.line + 1 <= +problemLine && +problemLine <= selection.end.line + 1)) {
+        log('No problem rules found on your selection.', true, 'OK')
         return
       }
 
@@ -130,7 +130,9 @@ const disposes = [
 
         const ruleIDSet = new Set<string>()
         for (const line in lineRuleIdsMap) {
-          lineRuleIdsMap[line].forEach(item => ruleIDSet.add(item))
+          if (selection.start.line + 1 <= +line && +line <= selection.end.line + 1) {
+            lineRuleIdsMap[line].forEach(item => ruleIDSet.add(item))
+          }
         }
 
         void activeTextEditor.insertSnippet(
