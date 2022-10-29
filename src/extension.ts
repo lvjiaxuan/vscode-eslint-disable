@@ -39,6 +39,9 @@ export async function activate(context: ExtensionContext) {
   context.subscriptions.push(...disposes, statusBarItem)
 
   log('eslint-disabled initialized!')
+  statusBarItem.text = '$(check) eslint-disabled initialized!'
+  statusBarItem.show()
+  setTimeout(() => statusBarItem.hide(), 5000)
 }
 
 // this method is called when your extension is deactivated
@@ -58,7 +61,7 @@ const disposes = [
     }
 
     if (activeTextEditor.selections.length > 1) {
-      log('Sorry, we can not disable multi-lines for now. Support in later version.', true, 'OK')
+      log('Sorry, we can not disable multi-selections for now. Support it in later version.', true, 'OK')
       return
     }
 
@@ -99,8 +102,9 @@ const disposes = [
 
     activeTextEditor.selections.forEach(selection => {
 
+
       const text = getTextBylines(selection.start.line, selection.end.line)
-      if (!text) {
+      if (!text?.replace(/\n|\r/g, '')) {
         log('No content to disable.', true, 'OK')
         return
       }
