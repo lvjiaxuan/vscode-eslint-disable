@@ -140,8 +140,8 @@ const disposes = [
           new Position(selection.start.line, insertIndex),
         )
         void activeTextEditor.insertSnippet(
-          new SnippetString(`\n/* eslint-enable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
-          new Position(selection.end.line + 1, insertIndex),
+          new SnippetString(`${ ' '.repeat(insertIndex) }/* eslint-enable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
+          new Position(selection.end.line + 2, 0),
         )
       }
     })
