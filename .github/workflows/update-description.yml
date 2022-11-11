@@ -1,0 +1,12 @@
+on:
+  push:
+   branches:
+      - main
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: zhengbangbo/update-repository-description@main
+        with:
+          repo-token: ${{ secrets.REPO_TOKEN }}

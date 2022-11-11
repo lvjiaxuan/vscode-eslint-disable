@@ -6,8 +6,7 @@
 
 <hr />
 
-<p align="center">Insert `eslint-disable` comments with present problem rules for VS Code.</p>
-
+<p align="center">Insert `eslint-disable` directive comment with present problem rules for VS Code..</p>
 
 [![](https://img.shields.io/visual-studio-marketplace/v/lvjiaxuan.eslint-disable?label=Visual%20Studio%20Marketplace)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
@@ -17,7 +16,7 @@
 ## Features
 
 - Simple snippets with typing `eslint-disable`.
-- Select one or **multiple lines** which have rule problems from ESLint, and disable it:
+- Select one or **multiple lines** which have rule problems from ESLint, and disable it with:
   - The editor context menu.
   - Cmd(`eslint-disable.disableIT`).
   - Keyboard shortcuts(`ctrl + alt + d`).
@@ -33,4 +32,5 @@
 
 - [ ] Support multi-selections disable at the same action. 
 - [ ] eslint-disable.enable: Enable/Disable this extension.
+- [ ] Pre-linting at activation time.
 - [ ] Snippets supports present problem rules.
