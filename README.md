@@ -20,7 +20,10 @@
   - The editor context menu.
   - Cmd(`eslint-disable.disableIT`).
   - Keyboard shortcuts(`ctrl + alt + d`).
-  - *More, you don't need to select lines's full content. See preview below.*
+
+> **Note**
+> 
+> It doesn't need to select full characters of lines. See preview below.
 
 ## Preview
 
@@ -30,7 +33,8 @@
 
 ## Todo
 
-- [ ] Support multi-selections disable at the same action. 
-- [ ] eslint-disable.enable: Enable/Disable this extension.
-- [ ] Pre-linting at activation time.
+- [ ] contributes: `eslint-disable.enable`.
+- [ ] commands: `eslint-disable.restart`.
+- [ ] Support multi-selections disable at the same action.
+- [ ] Pre-Linting at activation time.
 - [ ] Snippets supports present problem rules.
