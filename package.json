@@ -1,7 +1,7 @@
 {
   "publisher": "lvjiaxuan",
-  "name": "eslint-disable",
-  "displayName": "eslint-disable",
+  "name": "vscode-eslint-disable",
+  "displayName": "ESLint Disable",
   "version": "0.0.6",
   "description": "Insert `eslint-disable` directive comment with present problem rules for VS Code.",
   "license": "MIT",
