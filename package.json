@@ -27,10 +27,6 @@
   "contributes": {
     "commands": [
       {
-        "command": "eslint-disable.helloWorld",
-        "title": "eslint-disable: Hello World"
-      },
-      {
         "command": "eslint-disable.disableIT",
         "title": "eslint-disable: disable it"
       }
@@ -95,14 +91,14 @@
   "devDependencies": {
     "@lvjiaxuan/eslint-config": "^0.2.1",
     "@types/eslint": "^8.4.10",
-    "@types/node": "^18.11.9",
+    "@types/node": "^18.11.11",
     "@types/vscode": "^1.60.0",
-    "@typescript-eslint/eslint-plugin": "^5.43.0",
-    "@typescript-eslint/parser": "^5.43.0",
-    "@vscode/test-electron": "^2.2.0",
-    "eslint": "^8.27.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.1",
+    "@typescript-eslint/parser": "^5.45.1",
+    "@vscode/test-electron": "^2.2.1",
+    "eslint": "^8.29.0",
     "tsup": "^6.5.0",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.4"
   },
   "eslintConfig": {
     "extends": "@lvjiaxuan",
