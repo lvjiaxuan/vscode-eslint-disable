@@ -1,12 +1,12 @@
-import { type ExtensionContext, Position, SnippetString, StatusBarAlignment, StatusBarItem, commands, window, workspace } from 'vscode'
+import { type ExtensionContext, Position, SnippetString, StatusBarAlignment, type StatusBarItem, commands, window, workspace } from 'vscode'
 import log from './log'
 import type { ESLint } from 'eslint'
 import { getTextBylines } from './utils'
 import { workspacePath } from './global'
 import { constructESLint } from './eslint'
+import statusBarItem, { showStatusBarItem } from './statusBarItem'
 
 let eslint: ESLint
-let statusBarItem: StatusBarItem
 
 export async function activate(context: ExtensionContext) {
   log('eslint-disabled activated!')
@@ -34,19 +34,15 @@ export async function activate(context: ExtensionContext) {
     },
   })
 
-  statusBarItem = window.createStatusBarItem(StatusBarAlignment.Left)
-
-  context.subscriptions.push(...disposes, statusBarItem)
+  context.subscriptions.push(...disposes, statusBarItem.value)
 
   log('eslint-disabled initialized!')
-  statusBarItem.text = '$(check) eslint-disabled initialized!'
-  statusBarItem.show()
-  setTimeout(() => statusBarItem.hide(), 5000)
+  showStatusBarItem('$(check) eslint-disabled initialized!')
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-  statusBarItem.dispose()
+  statusBarItem.value.dispose()
 }
 
 const disposes = [
@@ -71,8 +67,7 @@ const disposes = [
     }
 
     log('Start linting hole file content...')
-    statusBarItem.text = '$(loading~spin) Start linting hole file content...'
-    statusBarItem.show()
+    showStatusBarItem('$(loading~spin) Start linting hole file content...', false)
 
     // FIXME: A workaround.
     await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
@@ -81,9 +76,8 @@ const disposes = [
 
     log('Linting finish.')
 
-    // eslint-disable-next-line require-atomic-updates
-    statusBarItem.text = `$(check) Linting finish(${ Date.now() - _startTime }ms).`
-    setTimeout(() => statusBarItem.hide(), 5000)
+
+    showStatusBarItem(`$(check) Linting finish(${ Date.now() - _startTime }ms).`)
 
     const lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
       if (!item.ruleId) return preValue
@@ -147,8 +141,21 @@ const disposes = [
     })
   }),
 
-  // hello world
-  commands.registerCommand('eslint-disable.helloWorld', () => {
-    void window.showInformationMessage('Hello World from eslint-disable!!!')
+  // reload
+  commands.registerCommand('eslint-disable.reload', async () => {
+    log('Reloading eslint-disable...')
+    showStatusBarItem('$(loading~spin) Reloading eslint-disable.', false)
+    eslint = await constructESLint({
+      overrideConfig: {
+        overrides: [
+          {
+            files: [ '*.ts', '*.d.ts', '*.tsx', '*.vue' ],
+            parserOptions: { tsconfigRootDir: workspacePath },
+          },
+        ],
+      },
+    })
+    log('Reloading finished.')
+    showStatusBarItem('$(check) Reloading finished.')
   }),
 ]

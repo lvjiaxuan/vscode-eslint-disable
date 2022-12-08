@@ -33,8 +33,8 @@
 
 ## Todo
 
-- [ ] contributes: `eslint-disable.enable`.
-- [ ] commands: `eslint-disable.restart`.
+- [x] contributes: `eslint-disable.disable`.
+- [ ] commands: `eslint-disable.reload`.
 - [ ] Support multi-selections disable at the same action.
 - [ ] Pre-Linting at activation time.
 - [ ] Snippets supports present problem rules.

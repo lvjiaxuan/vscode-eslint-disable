@@ -29,10 +29,14 @@
       {
         "command": "eslint-disable.disableIT",
         "title": "eslint-disable: disable it"
+      },
+      {
+        "command": "eslint-disable.reload",
+        "title": "eslint-disable: reload"
       }
     ],
     "configuration": {
-      "title": "eslint-disable",
+      "title": "ESLint Disable",
       "properties": {
         "eslint-disable.disable": {
           "type": "boolean",
