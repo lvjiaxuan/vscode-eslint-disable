@@ -15,12 +15,12 @@ export default {
   },
 }
 
-export const showStatusBarItem = (text: string, hide = true) => {
+export const showStatusBarItem = (text: string, time = 5000) => {
   statusBarItem.text = text
   statusBarItem.show()
-  hide && hideStatusBarItem()
+  time > 0 && hideStatusBarItem(time)
 }
 
 export const hideStatusBarItem = (delay = 5000) => {
-  setTimeout(statusBarItem.hide, delay)
+  setTimeout(() => statusBarItem.hide(), delay)
 }

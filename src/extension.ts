@@ -67,7 +67,7 @@ const disposes = [
     }
 
     log('Start linting hole file content...')
-    showStatusBarItem('$(loading~spin) Start linting hole file content...', false)
+    showStatusBarItem('$(loading~spin) Start linting hole file content...', 0)
 
     // FIXME: A workaround.
     await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
@@ -75,7 +75,6 @@ const disposes = [
     const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath) // 经调试，实际上是同步代码，所以导致 `statusBarItem.show` 无法立即渲染显示
 
     log('Linting finish.')
-
 
     showStatusBarItem(`$(check) Linting finish(${ Date.now() - _startTime }ms).`)
 
@@ -144,7 +143,7 @@ const disposes = [
   // reload
   commands.registerCommand('eslint-disable.reload', async () => {
     log('Reloading eslint-disable...')
-    showStatusBarItem('$(loading~spin) Reloading eslint-disable.', false)
+    showStatusBarItem('$(loading~spin) Reloading eslint-disable.', 0)
     eslint = await constructESLint({
       overrideConfig: {
         overrides: [
