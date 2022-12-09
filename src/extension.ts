@@ -1,4 +1,4 @@
-import { type ExtensionContext, Position, SnippetString, StatusBarAlignment, type StatusBarItem, commands, window, workspace } from 'vscode'
+import { type ExtensionContext, Position, SnippetString, type TextEditor, commands, window, workspace } from 'vscode'
 import log from './log'
 import type { ESLint } from 'eslint'
 import { getTextBylines } from './utils'
@@ -7,8 +7,10 @@ import { constructESLint } from './eslint'
 import statusBarItem, { showStatusBarItem } from './statusBarItem'
 
 let eslint: ESLint
+const cache = new WeakMap<TextEditor, Record<number, string[]>>()
 
 export async function activate(context: ExtensionContext) {
+  const _startTime = Date.now()
   log('eslint-disabled activated!')
 
   const config = workspace.getConfiguration('eslint-disable')
@@ -36,8 +38,16 @@ export async function activate(context: ExtensionContext) {
 
   context.subscriptions.push(...disposes, statusBarItem.value)
 
-  log('eslint-disabled initialized!')
-  showStatusBarItem('$(check) eslint-disabled initialized!')
+  if (window.activeTextEditor) {
+    void commands.executeCommand('eslint-disable.disableIT', true)
+  }
+  window.onDidChangeActiveTextEditor(editor => {
+    // ...
+    void commands.executeCommand('eslint-disable.disableIT', true)
+  })
+
+  log(`eslint-disabled initialized(${ Date.now() - _startTime }ms)!`)
+  showStatusBarItem(`$(check) eslint-disabled initialized(${ Date.now() - _startTime }ms)!`)
 }
 
 // this method is called when your extension is deactivated
@@ -48,52 +58,62 @@ export function deactivate() {
 const disposes = [
 
   // disable lines
-  commands.registerCommand('eslint-disable.disableIT', async () => {
+  commands.registerCommand('eslint-disable.disableIT', async (silent = false) => {
 
     const activeTextEditor = window.activeTextEditor
-    if (!activeTextEditor || !eslint) {
-      log('no `activeTextEditor` exist.')
+    if (!activeTextEditor) {
       return
     }
 
     if (activeTextEditor.selections.length > 1) {
-      log('Sorry, we can not disable multi-selections for now. Support it in later version.', true, 'OK')
+      log('Sorry, we can not disable multi-selections for now. it will be supported in later version.', true, 'OK')
       return
     }
 
     if (!eslint) {
-      log('ESLint library is pending.')
+      log('ESLint library is pending. Try again later.')
       return
     }
 
-    log('Start linting hole file content...')
-    showStatusBarItem('$(loading~spin) Start linting hole file content...', 0)
+    let lineRuleIdsMap = cache.get(activeTextEditor)
+    console.log(lineRuleIdsMap)
+    if (!lineRuleIdsMap) {
 
-    // FIXME: A workaround.
-    await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
-    const _startTime = Date.now()
-    const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath) // 经调试，实际上是同步代码，所以导致 `statusBarItem.show` 无法立即渲染显示
+      log('Start linting hole file content...')
+      showStatusBarItem('$(loading~spin) Start linting hole file content...', 0)
 
-    log('Linting finish.')
+      // FIXME: A workaround.
+      await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
+      const _startTime = Date.now()
+      const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath) // 经调试，实际上是同步代码，所以导致 `statusBarItem.show` 无法立即渲染显示
 
-    showStatusBarItem(`$(check) Linting finish(${ Date.now() - _startTime }ms).`)
+      log(`Linting finish(${ Date.now() - _startTime }ms).`)
+      showStatusBarItem(`$(check) Linting finish(${ Date.now() - _startTime }ms).`)
 
-    const lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
-      if (!item.ruleId) return preValue
-      if (!preValue[item.line]) {
-        preValue[item.line] = [ item.ruleId ]
-      } else {
-        preValue[item.line] = [ ...preValue[item.line], item.ruleId ]
-      }
-      return preValue
-    }, {} as Record<number, string[]>) ?? {}
+      // eslint-disable-next-line require-atomic-updates
+      lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
+        if (!item.ruleId) return preValue
+        if (!preValue[item.line]) {
+          preValue[item.line] = [ item.ruleId ]
+        } else {
+          preValue[item.line] = [ ...preValue[item.line], item.ruleId ]
+        }
+        return preValue
+      }, {} as Record<number, string[]>) ?? {}
+      cache.set(activeTextEditor, lineRuleIdsMap)
+    } else {
+      // find cache lineRuleIdsMap
+      log('Cache found.')
+      showStatusBarItem('Cache found.')
+    }
+
 
     if (!Object.keys(lineRuleIdsMap).length) {
-      log('Everything is good.', true, 'OK')
+      log('Everything is good.', !silent, 'OK')
       return
     }
 
-    activeTextEditor.selections.forEach(selection => {
+    !silent && activeTextEditor.selections.forEach(selection => {
 
       const text = getTextBylines(selection.start.line, selection.end.line)
       if (!text?.replace(/\n|\r/g, '')) {
@@ -101,7 +121,7 @@ const disposes = [
         return
       }
 
-      if (!Object.keys(lineRuleIdsMap).some(problemLine =>
+      if (!Object.keys(lineRuleIdsMap!).some(problemLine =>
         selection.start.line + 1 <= +problemLine && +problemLine <= selection.end.line + 1)) {
         log('No problem rules found on your selection.', true, 'OK')
         return
@@ -115,7 +135,7 @@ const disposes = [
       if (selection.isSingleLine) {
         // Insert at previous line.
         void activeTextEditor.insertSnippet(
-          new SnippetString(`// eslint-disable-next-line \${1|${ lineRuleIdsMap[selection.start.line + 1].join('\\, ') }|}\n`),
+          new SnippetString(`// eslint-disable-next-line \${1|${ lineRuleIdsMap![selection.start.line + 1].join('\\, ') }|}\n`),
           new Position(selection.start.line, insertIndex),
         )
       } else {
@@ -124,7 +144,7 @@ const disposes = [
         const ruleIDSet = new Set<string>()
         for (const line in lineRuleIdsMap) {
           if (selection.start.line + 1 <= +line && +line <= selection.end.line + 1) {
-            lineRuleIdsMap[line].forEach(item => ruleIDSet.add(item))
+            lineRuleIdsMap[+line].forEach(item => ruleIDSet.add(item))
           }
         }
 
@@ -142,7 +162,7 @@ const disposes = [
 
   // reload
   commands.registerCommand('eslint-disable.reload', async () => {
-    log('Reloading eslint-disable...')
+    log('Reloading eslint-disable.')
     showStatusBarItem('$(loading~spin) Reloading eslint-disable.', 0)
     eslint = await constructESLint({
       overrideConfig: {

@@ -33,8 +33,8 @@
 
 ## Todo
 
-- [x] contribute: `eslint-disable.disable`.
+- [x] configuration: `eslint-disable.disable`.
 - [x] command: `eslint-disable.reload`.
 - [ ] Support multi-selections disable at the same action.
-- [ ] Pre-Linting at activation time.
+- [ ] Pre-Linting after activeTextEditor open with `eslint-disable.preLinting` configuration.
 - [ ] Snippets supports present problem rules.
