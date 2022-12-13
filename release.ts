@@ -9,7 +9,5 @@ execSync(`git ac "Release ${ releaseVersion }"`)
 
 execSync(`git tag ${ releaseVersion }`)
 
-void Promise.all([
-  exec('git push'),
-  exec('git push --tags'),
-]).then(() => process.exit(0))
+exec('git push')
+exec('git push --tags')
