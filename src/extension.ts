@@ -1,22 +1,23 @@
-import { type ExtensionContext, Position, SnippetString, type TextEditor, commands, window, workspace } from 'vscode'
-import log from './log'
+import { type ExtensionContext, Position, SnippetString, commands, window, workspace } from 'vscode'
 import type { ESLint } from 'eslint'
 import { getTextBylines } from './utils'
 import { workspacePath } from './global'
 import { constructESLint } from './eslint'
 import statusBarItem, { showStatusBarItem } from './statusBarItem'
+import log from './log'
+import config from './configuration'
+import path from 'node:path'
+import fs from 'node:fs'
 
 let eslint: ESLint
-const cache = new WeakMap<TextEditor, Record<number, string[]>>()
+const lintingCache = new Map<string, Record<number, string[]>>()
 
 export async function activate(context: ExtensionContext) {
   const _startTime = Date.now()
-  log('eslint-disabled activated!')
+  log('eslint-disable is activating!')
 
-  const config = workspace.getConfiguration('eslint-disable')
-  const disabled = config.get('disable', false)
-  if (disabled) {
-    log('eslint-disabled is disabled.')
+  if (config.disable) {
+    log('eslint-disable is disable.')
     return
   }
 
@@ -24,6 +25,7 @@ export async function activate(context: ExtensionContext) {
     log('No `workspacePath` found.')
     return
   }
+
 
   eslint = await constructESLint({
     overrideConfig: {
@@ -36,18 +38,26 @@ export async function activate(context: ExtensionContext) {
     },
   })
 
+
   context.subscriptions.push(...disposes, statusBarItem.value)
 
-  if (window.activeTextEditor) {
-    void commands.executeCommand('eslint-disable.disableIT', true)
-  }
-  window.onDidChangeActiveTextEditor(editor => {
-    // ...
-    void commands.executeCommand('eslint-disable.disableIT', true)
-  })
 
-  log(`eslint-disabled initialized(${ Date.now() - _startTime }ms)!`)
-  showStatusBarItem(`$(check) eslint-disabled initialized(${ Date.now() - _startTime }ms)!`)
+  log(`eslint-disable is activated!(${ Date.now() - _startTime }ms)!`)
+  showStatusBarItem(`$(check) eslint-disable is activated!(${ Date.now() - _startTime }ms)!`)
+
+  log(`Pre-Linting is ${ config.preLinting ? 'enable' : 'disable' }.`)
+  if (config.preLinting) {
+    window.activeTextEditor && void commands.executeCommand('eslint-disable.disableIT', true)
+    window.onDidChangeActiveTextEditor(() => commands.executeCommand('eslint-disable.disableIT', true))
+    workspace.onDidChangeTextDocument(event => {
+      const fileName = event.document.fileName
+      if (lintingCache.has(fileName)) {
+        // PERF: It would be trigger by `eslint-disable` directive comments inserted which is not expected.
+        lintingCache.delete(fileName)
+        log(`${ fileName } - Clear linting cache.`)
+      }
+    })
+  }
 }
 
 // this method is called when your extension is deactivated
@@ -60,34 +70,41 @@ const disposes = [
   // disable lines
   commands.registerCommand('eslint-disable.disableIT', async (silent = false) => {
 
-    const activeTextEditor = window.activeTextEditor
-    if (!activeTextEditor) {
+    const activeTextEditor = window.activeTextEditor!
+
+    const fileName = activeTextEditor.document.fileName
+
+    try {
+      fs.statSync(fileName)
+    } catch {
+      log(`Skip, no such file: ${ fileName }`)
       return
     }
+
 
     if (activeTextEditor.selections.length > 1) {
-      log('Sorry, we can not disable multi-selections for now. it will be supported in later version.', true, 'OK')
+      log('Sorry, we can not disable multi-selections for now. It will be supported in later version.', true, 'OK')
       return
     }
 
-    if (!eslint) {
-      log('ESLint library is pending. Try again later.')
-      return
-    }
 
-    let lineRuleIdsMap = cache.get(activeTextEditor)
-    console.log(lineRuleIdsMap)
+    log('👇👇👇👇👇👇')
+    log(`eslint-disable services ${ fileName }`)
+    log('👆👆👆👆👆👆')
+
+
+    let lineRuleIdsMap = lintingCache.get(fileName)
     if (!lineRuleIdsMap) {
 
-      log('Start linting hole file content...')
-      showStatusBarItem('$(loading~spin) Start linting hole file content...', 0)
+      log(`${ fileName } - Start linting file text...`)
+      showStatusBarItem('$(loading~spin) Start linting file text...', 0)
 
       // FIXME: A workaround.
       await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
       const _startTime = Date.now()
-      const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath) // 经调试，实际上是同步代码，所以导致 `statusBarItem.show` 无法立即渲染显示
+      const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath) // By debugging, it is a sync task，which makes `statusBarItem.show` cloud not render immediately.
 
-      log(`Linting finish(${ Date.now() - _startTime }ms).`)
+      log(`${ fileName } - Linting finish(${ Date.now() - _startTime }ms).`)
       showStatusBarItem(`$(check) Linting finish(${ Date.now() - _startTime }ms).`)
 
       // eslint-disable-next-line require-atomic-updates
@@ -100,30 +117,36 @@ const disposes = [
         }
         return preValue
       }, {} as Record<number, string[]>) ?? {}
-      cache.set(activeTextEditor, lineRuleIdsMap)
+
+      if (config.preLinting) {
+        lintingCache.set(fileName, lineRuleIdsMap)
+        log(`${ fileName } - Set linting cache.`)
+      }
     } else {
-      // find cache lineRuleIdsMap
-      log('Cache found.')
-      showStatusBarItem('Cache found.')
+      const parseFileName = path.parse(fileName).base
+      log(`${ fileName } - Linting cache found.`)
+      showStatusBarItem(`Linting cache found for ${ parseFileName }.`)
     }
 
 
-    if (!Object.keys(lineRuleIdsMap).length) {
-      log('Everything is good.', !silent, 'OK')
+    if (lineRuleIdsMap && !Object.keys(lineRuleIdsMap).length) {
+      log(`${ fileName } - Everything is good.`, !silent, 'OK')
       return
+    } else {
+      log(`${ fileName } - Problems found: ${ Object.values(lineRuleIdsMap).toString() } `)
     }
 
     !silent && activeTextEditor.selections.forEach(selection => {
 
       const text = getTextBylines(selection.start.line, selection.end.line)
       if (!text?.replace(/\n|\r/g, '')) {
-        log('No content to disable.', true, 'OK')
+        log(`${ fileName } - No content to disable.`, true, 'OK')
         return
       }
 
       if (!Object.keys(lineRuleIdsMap!).some(problemLine =>
         selection.start.line + 1 <= +problemLine && +problemLine <= selection.end.line + 1)) {
-        log('No problem rules found on your selection.', true, 'OK')
+        log(`${ fileName } - No problem rules found from your selection.`, true, 'OK')
         return
       }
 

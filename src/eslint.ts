@@ -1,9 +1,9 @@
 import log from './log'
 import { Files } from 'vscode-languageserver/node'
 import { workspacePath } from './global'
-import { exec } from 'child_process'
+import { exec } from 'node:child_process'
 import type { ESLint } from 'eslint'
-import path from 'path'
+import path from 'node:path'
 
 type PKG_MANAGERS = { agent: 'pnpm' | 'npm' | 'yarn', path: string }
 const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspacePath, message => { /**/ })
