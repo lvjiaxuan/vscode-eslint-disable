@@ -8,10 +8,13 @@
 
 <p align="center">Insert `eslint-disable` directive comment with present problem rules for VS Code..</p>
 
-> [![](https://img.shields.io/visual-studio-marketplace/v/lvjiaxuan.vscode-eslint-disable?label=Visual%20Studio%20Marketplace)
+[![](https://img.shields.io/visual-studio-marketplace/v/lvjiaxuan.vscode-eslint-disable?label=Visual%20Studio%20Marketplace)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.vscode-eslint-disable)
-> [![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.vscode-eslint-disable?label=Installs)
+[![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.vscode-eslint-disable?label=Installs)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.vscode-eslint-disable)
+
+> Deprecated identifier: [![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.eslint-disable?label=Installs)
+](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
 
 ## Features
 
