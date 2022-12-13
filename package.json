@@ -2,7 +2,7 @@
   "publisher": "lvjiaxuan",
   "name": "vscode-eslint-disable",
   "displayName": "ESLint Disable",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Insert `eslint-disable` directive comment with present problem rules for VS Code.",
   "license": "MIT",
   "repository": {
@@ -92,7 +92,8 @@
     "pretest": "nr compile && nr lint",
     "lint": "eslint . --fix --cache",
     "pack": "vsce package",
-    "publish": "vsce publish"
+    "publish": "vsce publish",
+    "release": "nx jiti release.ts"
   },
   "dependencies": {
     "vscode-languageserver": "^8.0.2"
