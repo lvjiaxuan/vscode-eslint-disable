@@ -36,5 +36,5 @@
 - [x] configuration: `eslint-disable.disable`.
 - [x] command: `eslint-disable.reload`.
 - [ ] Support multi-selections disable at the same action.
-- [ ] Pre-Linting after activeTextEditor open with `eslint-disable.preLinting` configuration.
+- [x] Pre-Linting supported with `eslint-disable.preLinting` configuration.
 - [ ] Snippets supports present problem rules.
