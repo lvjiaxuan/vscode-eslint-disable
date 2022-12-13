@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lvjiaxuan/eslint-disable"
+    "url": "https://github.com/lvjiaxuan/vscode-eslint-disable"
   },
   "categories": [
     "Other",
