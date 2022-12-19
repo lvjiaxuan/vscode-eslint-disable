@@ -1,14 +1,14 @@
 <p align="center">
-  <a href="https://github.com/lvjiaxuan/eslint-disable" target="_blank">
-    <img src="./assets/icon.png" alt="eslint-disable" height="250" width="250" />
+  <a href="https://github.com/lvjiaxuan/vscode-eslint-disable" target="_blank">
+    <img src="./assets/logo.svg" alt="vscode-eslint-disable" height="280" width="280" />
   </a>
 </p>
 
 <hr />
 
-<p align="center">Insert `eslint-disable` directive comment with present problem rules for VS Code..</p>
+<p align="center">Insert `eslint-disable` directive comment with present problem rules for VS Code.</p>
 
-[![](https://img.shields.io/visual-studio-marketplace/v/lvjiaxuan.vscode-eslint-disable?label=Visual%20Studio%20Marketplace)
+[![](https://img.shields.io/visual-studio-marketplace/v/lvjiaxuan.vscode-eslint-disable?color=%232ba1f1&logo=visual-studio-code&logoColor=%232ba1f1)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.vscode-eslint-disable)
 [![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.vscode-eslint-disable?label=Installs)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.vscode-eslint-disable)
@@ -34,10 +34,7 @@
 
 ![](assets/2.gif)
 
-## Todo
+## TODO
 
-- [x] configuration: `eslint-disable.disable`.
-- [x] command: `eslint-disable.reload`.
 - [ ] Support multi-selections disable at the same action.
-- [x] Pre-Linting supported with `eslint-disable.preLinting` configuration.
 - [ ] Snippets supports present problem rules.
