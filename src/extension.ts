@@ -113,7 +113,7 @@ const disposes = [
         if (!preValue[item.line]) {
           preValue[item.line] = [ item.ruleId ]
         } else {
-          preValue[item.line] = [ ...preValue[item.line], item.ruleId ]
+          preValue[item.line] = [ ...new Set([ ...preValue[item.line], item.ruleId ]) ]
         }
         return preValue
       }, {} as Record<number, string[]>) ?? {}
