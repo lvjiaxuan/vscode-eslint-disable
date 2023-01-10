@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/lvjiaxuan/vscode-eslint-disable" target="_blank">
-    <img src="./assets/logo.svg" alt="vscode-eslint-disable" height="280" width="280" />
+    <img src="./assets/logo-r.png" alt="vscode-eslint-disable" height="280" width="280" />
   </a>
 </p>
 
