@@ -12,17 +12,16 @@
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.vscode-eslint-disable)
 [![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.vscode-eslint-disable?label=Installs)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.vscode-eslint-disable)
-
-> Deprecated identifier: [![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.eslint-disable?label=Installs)
+[![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.eslint-disable?label=Deprecated%20Identifier%20Installs)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
 
 ## Features
 
 - Simple snippets with typing `eslint-disable`.
-- Select one or **multiple lines** which have rule problems from ESLint, and disable it with:
+- Select one or **multiple lines** which has rule problems from extension of ESLint intellisense, and we could disable rules with:
   - The editor context menu.
-  - Cmd(`eslint-disable.disableIT`).
-  - Keyboard shortcuts(`ctrl + alt + d`).
+  - Command: `eslint-disable.disableIT`.
+  - Keyboard shortcuts: `ctrl + alt + d`.
 
 > **Note**
 > 
