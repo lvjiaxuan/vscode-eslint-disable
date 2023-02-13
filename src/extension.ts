@@ -51,8 +51,16 @@ export async function activate(context: ExtensionContext) {
     window.onDidChangeActiveTextEditor(() => commands.executeCommand('eslint-disable.disableIT', true))
     workspace.onDidChangeTextDocument(event => {
       const fileName = event.document.fileName
-      if (lintingCache.has(fileName)) {
-        // PERF: It would be trigger by `eslint-disable` directive comments inserted which is not expected.
+
+      if (!event.contentChanges.length) {
+        return
+      }
+
+      const isOnlyESLintDisableText = event.contentChanges.every(({ text }) => {
+        const trimText = text.trim()
+        return trimText.startsWith('// eslint-disable-next-line ') || trimText.startsWith('// eslint-disable ')
+      })
+      if (!isOnlyESLintDisableText && lintingCache.has(fileName)) {
         lintingCache.delete(fileName)
         log(`${ fileName } - Clear linting cache.`)
       }
@@ -125,7 +133,7 @@ const disposes = [
     } else {
       const parseFileName = path.parse(fileName).base
       log(`${ fileName } - Linting cache found.`)
-      showStatusBarItem(`Linting cache found for ${ parseFileName }.`)
+      showStatusBarItem(`Linting cache found at ${ parseFileName }.`)
     }
 
 
@@ -161,6 +169,7 @@ const disposes = [
           new SnippetString(`// eslint-disable-next-line \${1|${ lineRuleIdsMap![selection.start.line + 1].join('\\, ') }|}\n`),
           new Position(selection.start.line, insertIndex),
         )
+        delete lineRuleIdsMap![selection.start.line + 1]
       } else {
         // Wrap lines. Press `ctrl+d `to edit rules at between lines.
 
@@ -168,6 +177,7 @@ const disposes = [
         for (const line in lineRuleIdsMap) {
           if (selection.start.line + 1 <= +line && +line <= selection.end.line + 1) {
             lineRuleIdsMap[+line].forEach(item => ruleIDSet.add(item))
+            delete lineRuleIdsMap[+line]
           }
         }
 
@@ -197,6 +207,7 @@ const disposes = [
         ],
       },
     })
+    lintingCache.clear()
     log('Reloading finished.')
     showStatusBarItem('$(check) Reloading finished.')
   }),

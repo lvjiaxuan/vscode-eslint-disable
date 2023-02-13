@@ -14,5 +14,5 @@ export default (
   ...informationMessage: string[]
 ) => {
   channel.appendLine(`[${ getNowFormat() }] - ${ message }`)
-  showInformationMessage && window.showInformationMessage(message, ...informationMessage)
+  showInformationMessage && void window.showInformationMessage(message, ...informationMessage)
 }
