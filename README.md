@@ -18,7 +18,7 @@
 ## Features
 
 - Simple snippets with typing `eslint-disable`.
-- Select one or **multiple lines** which has rule problems from extension of ESLint intellisense, and we could disable rules with:
+- Select one or **multiple lines** which has rule problems from extension of ESLint IntelliSense, and we could disable rules with:
   - The editor context menu.
   - Command: `eslint-disable.disableIT`.
   - Keyboard shortcuts: `ctrl + alt + d`.
@@ -36,4 +36,4 @@
 ## TODO
 
 - [ ] Support multi-selections disable at the same action.
-- [ ] Snippets supports present problem rules.
+- [ ] Snippets support present problem rules.
