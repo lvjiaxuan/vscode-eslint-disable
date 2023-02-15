@@ -47,20 +47,21 @@ export async function activate(context: ExtensionContext) {
 
   log(`Pre-Linting is ${ config.preLinting ? 'enable' : 'disable' }.`)
   if (config.preLinting) {
-    window.activeTextEditor && void commands.executeCommand('eslint-disable.disableIT', true)
-    window.onDidChangeActiveTextEditor(() => commands.executeCommand('eslint-disable.disableIT', true))
+    window.activeTextEditor && void commands.executeCommand('eslint-disable.disable', true)
+    window.onDidChangeActiveTextEditor(() => window.activeTextEditor && commands.executeCommand('eslint-disable.disable', true))
     workspace.onDidChangeTextDocument(event => {
       const fileName = event.document.fileName
 
-      if (!event.contentChanges.length) {
+      if (!checkFileExist(event.document.fileName) || !event.contentChanges.length) {
         return
       }
 
-      const isOnlyESLintDisableText = event.contentChanges.every(({ text }) => {
-        const trimText = text.trim()
-        return trimText.startsWith('// eslint-disable-next-line ') || trimText.startsWith('// eslint-disable ')
-      })
-      if (!isOnlyESLintDisableText && lintingCache.has(fileName)) {
+      /**
+       * It seems that inserting `// eslint-disable` is no need to clear cache.
+       * But in actually, the line numbers on cache would be changed.
+       * Maybe I should re-compute these line numbers later.
+       */
+      if (lintingCache.has(fileName)) {
         lintingCache.delete(fileName)
         log(`${ fileName } - Clear linting cache.`)
       }
@@ -76,16 +77,13 @@ export function deactivate() {
 const disposes = [
 
   // disable lines
-  commands.registerCommand('eslint-disable.disableIT', async (silent = false) => {
+  commands.registerCommand('eslint-disable.disable', async (silent = false) => {
 
     const activeTextEditor = window.activeTextEditor!
 
     const fileName = activeTextEditor.document.fileName
 
-    try {
-      fs.statSync(fileName)
-    } catch {
-      log(`Skip, no such file: ${ fileName }`)
+    if (!checkFileExist(fileName)) {
       return
     }
 
@@ -212,3 +210,14 @@ const disposes = [
     showStatusBarItem('$(check) Reloading finished.')
   }),
 ]
+
+
+function checkFileExist(fileName: string) {
+  try {
+    fs.statSync(fileName)
+  } catch {
+    // log(`Skip, no such file: ${ fileName }`)
+    return false
+  }
+  return true
+}
