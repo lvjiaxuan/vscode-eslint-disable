@@ -27,7 +27,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "eslint-disable.disableIT",
+        "command": "eslint-disable.disable",
         "title": "eslint-disable: disable it"
       },
       {
@@ -53,14 +53,14 @@
     "menus": {
       "editor/context": [
         {
-          "command": "eslint-disable.disableIT",
+          "command": "eslint-disable.disable",
           "group": "1_modification"
         }
       ]
     },
     "keybindings": [
       {
-        "command": "eslint-disable.disableIT",
+        "command": "eslint-disable.disable",
         "key": "ctrl+alt+d",
         "mac": "ctrl+alt+d",
         "when": "editorTextFocus"
@@ -96,22 +96,23 @@
     "release": "nx jiti release.ts"
   },
   "dependencies": {
-    "vscode-languageserver": "^8.0.2"
+    "vscode-languageserver": "^8.1.0"
   },
   "devDependencies": {
-    "@lvjiaxuan/eslint-config": "^0.2.1",
-    "@types/eslint": "^8.21.0",
+    "@lvjiaxuan/eslint-plugin": "^0.4.2",
+    "@types/eslint": "^8.21.1",
     "@types/node": "^18.13.0",
-    "@types/vscode": "^1.60.0",
-    "@typescript-eslint/eslint-plugin": "^5.51.0",
-    "@typescript-eslint/parser": "^5.51.0",
+    "@types/vscode": "^1.75.1",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
     "@vscode/test-electron": "^2.2.3",
     "eslint": "^8.34.0",
-    "tsup": "^6.6.2",
-    "typescript": "^4.9.5"
+    "tsup": "^6.6.3",
+    "typescript": "^4.9.5",
+    "vue": "^3.2.47"
   },
   "eslintConfig": {
-    "extends": "@lvjiaxuan",
+    "extends": "plugin:@lvjiaxuan/recommended",
     "rules": {
       "no-promise-executor-return": "off"
     }

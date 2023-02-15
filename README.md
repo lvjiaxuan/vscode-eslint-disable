@@ -20,7 +20,7 @@
 - Simple snippets with typing `eslint-disable`.
 - Select one or **multiple lines** which has rule problems from extension of ESLint IntelliSense, and we could disable rules with:
   - The editor context menu.
-  - Command: `eslint-disable.disableIT`.
+  - Command: `eslint-disable.disable`.
   - Keyboard shortcuts: `ctrl + alt + d`.
 
 > **Note**
