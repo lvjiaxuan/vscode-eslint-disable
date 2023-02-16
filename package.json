@@ -28,7 +28,11 @@
     "commands": [
       {
         "command": "eslint-disable.disable",
-        "title": "eslint-disable: disable it"
+        "title": "eslint-disable: disable for line(s)"
+      },
+      {
+        "command": "eslint-disable.entire",
+        "title": "eslint-disable: disable for entire file"
       },
       {
         "command": "eslint-disable.reload",
@@ -55,6 +59,10 @@
         {
           "command": "eslint-disable.disable",
           "group": "1_modification"
+        },
+        {
+          "command": "eslint-disable.entire",
+          "group": "1_modification"
         }
       ]
     },
@@ -63,6 +71,12 @@
         "command": "eslint-disable.disable",
         "key": "ctrl+alt+d",
         "mac": "ctrl+alt+d",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "eslint-disable.entire",
+        "key": "ctrl+alt+e",
+        "mac": "ctrl+alt+e",
         "when": "editorTextFocus"
       }
     ]

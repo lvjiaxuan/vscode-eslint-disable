@@ -1,4 +1,4 @@
-import { type ExtensionContext, Position, SnippetString, commands, window, workspace } from 'vscode'
+import { type ExtensionContext, Position, type Selection, SnippetString, type TextEditor, commands, window, workspace } from 'vscode'
 import type { ESLint } from 'eslint'
 import { existFile, getTextBylines } from './utils'
 import { workspacePath } from './global'
@@ -80,89 +80,9 @@ export function deactivate() {
 const disposes = [
 
   // disable lines
-  commands.registerCommand('eslint-disable.disable', async (silent = false) => {
-    const activeTextEditor = window.activeTextEditor!
-
-    const fileName = activeTextEditor.document.fileName
-    const basename = path.basename(fileName)
-
-    if (!await existFile(fileName)) {
-      return
-    }
-
-    if (activeTextEditor.selections.length > 1) {
-      log('Sorry, we can not disable multi-selections for now. It will be supported in later version.', true, 'OK')
-      return
-    }
-
-    if (filesBusy.get(fileName)) {
-      // Using keyboard shortcut, commands execute in serial.
-      // Under onDidChangeTextDocument, commands execute in parallel.
-      return
-    }
-    filesBusy.set(fileName, true)
-
-    log('👇👇👇👇👇👇')
-    log(`eslint-disable services ${ fileName }`)
-
-    let lineRuleIdsMap = lintingCache.get(fileName)
-    if (!lineRuleIdsMap) {
-
-      log(`${ basename } - Start linting file text...`)
-      showStatusBarItem('$(loading~spin) Start linting file text...', 0)
-
-      // FIXME: A workaround.
-      await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
-      const _startTime = Date.now()
-      const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath) // By debugging, it is a sync task，which makes `statusBarItem.show` cloud not render immediately.
-
-      log(`${ basename } - Linting finish(${ Date.now() - _startTime }ms).`)
-      showStatusBarItem(`$(check) Linting finish(${ Date.now() - _startTime }ms).`)
-
-      // eslint-disable-next-line require-atomic-updates
-      lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
-        if (!item.ruleId) return preValue
-        if (!preValue[item.line]) {
-          preValue[item.line] = [ item.ruleId ]
-        } else {
-          preValue[item.line] = [ ...new Set([ ...preValue[item.line], item.ruleId ]) ]
-        }
-        return preValue
-      }, {} as Record<number, string[]>) ?? {}
-
-      if (config.preLinting) {
-        lintingCache.set(fileName, lineRuleIdsMap)
-        log(`${ basename } - Set linting cache.`)
-      }
-    } else {
-      const parseFileName = path.parse(fileName).base
-      log(`${ basename } - Linting cache found.`)
-      showStatusBarItem(`Linting cache found at ${ parseFileName }.`)
-    }
-    filesBusy.set(fileName, false)
-
-
-    if (lineRuleIdsMap && !Object.keys(lineRuleIdsMap).length) {
-      log(`${ basename } - Everything is good.`, !silent, 'OK')
-      return
-    } else {
-      log(`${ basename } - Problems found: ${ Object.values(lineRuleIdsMap).toString() } `)
-    }
-
-    !silent && activeTextEditor.selections.forEach(selection => {
-
-      const text = getTextBylines(selection.start.line, selection.end.line)
-      if (!text?.replace(/\n|\r/g, '')) {
-        log(`${ basename } - No content to disable.`, true, 'OK')
-        return
-      }
-
-      if (!Object.keys(lineRuleIdsMap!).some(problemLine =>
-        selection.start.line + 1 <= +problemLine && +problemLine <= selection.end.line + 1)) {
-        log(`${ basename } - No problem rules found from your selection.`, true, 'OK')
-        return
-      }
-
+  commands.registerCommand('eslint-disable.disable', (silent = false) => {
+    // keep
+    void disable(silent as boolean, ({ text, activeTextEditor, selection, lineRuleIdsMap }) => {
       let insertIndex = 0
       while (text.charAt(insertIndex) == ' ') {
         insertIndex++
@@ -171,10 +91,10 @@ const disposes = [
       if (selection.isSingleLine) {
         // Insert at previous line.
         void activeTextEditor.insertSnippet(
-          new SnippetString(`// eslint-disable-next-line \${1|${ lineRuleIdsMap![selection.start.line + 1].join('\\, ') }|}\n`),
+          new SnippetString(`// eslint-disable-next-line \${1|${ lineRuleIdsMap[selection.start.line + 1].join('\\, ') }|}\n`),
           new Position(selection.start.line, insertIndex),
         )
-        delete lineRuleIdsMap![selection.start.line + 1]
+        delete lineRuleIdsMap[selection.start.line + 1]
       } else {
         // Wrap lines. Press `ctrl+d `to edit rules at between lines.
 
@@ -198,6 +118,38 @@ const disposes = [
     })
   }),
 
+  // for entire
+  commands.registerCommand('eslint-disable.entire', () => {
+    // keep
+    void disable(false, ({ selection, activeTextEditor, lineRuleIdsMap }) => {
+
+      let rules = ''
+      if (selection.isSingleLine) {
+        rules = lineRuleIdsMap[selection.start.line + 1].join('\\, ')
+        delete lineRuleIdsMap[selection.start.line + 1]
+      } else {
+        const ruleIDSet = new Set<string>()
+        for (const line in lineRuleIdsMap) {
+          if (selection.start.line + 1 <= +line && +line <= selection.end.line + 1) {
+            lineRuleIdsMap[+line].forEach(item => ruleIDSet.add(item))
+            delete lineRuleIdsMap[+line]
+          }
+        }
+        rules = [ ...ruleIDSet ].join('\\, ')
+      }
+
+      void activeTextEditor.insertSnippet(
+        new SnippetString(`/* eslint-disable \${1|${ rules }|} */\n`),
+        new Position(0, 0),
+      )
+      void activeTextEditor.insertSnippet(
+        new SnippetString(`/* eslint-enable \${1|${ rules }|} */\n`),
+        new Position(activeTextEditor.document.lineCount + 1, 0),
+      )
+
+    })
+  }),
+
   // reload
   commands.registerCommand('eslint-disable.reload', async () => {
     log('Reloading eslint-disable.')
@@ -217,3 +169,101 @@ const disposes = [
     showStatusBarItem('$(check) Reloading finished.')
   }),
 ]
+
+async function disable(silent: boolean, insert: (opts: {
+  text: string,
+  activeTextEditor: TextEditor,
+  selection: Selection,
+  lineRuleIdsMap: NonNullable<ReturnType<(typeof lintingCache)['get']>>
+}) => void) {
+  const activeTextEditor = window.activeTextEditor!
+
+  const fileName = activeTextEditor.document.fileName
+  const basename = path.basename(fileName)
+
+  if (!await existFile(fileName)) {
+    return false
+  }
+
+  if (activeTextEditor.selections.length > 1) {
+    log('Sorry, we can not disable multi-selections for now. It will be supported in later version.', true, 'OK')
+    return false
+  }
+
+  if (filesBusy.get(fileName)) {
+    // Using keyboard shortcut, commands execute in serial.
+    // Under onDidChangeTextDocument, commands execute in parallel.
+    return false
+  }
+  filesBusy.set(fileName, true)
+
+  log('👇👇👇👇👇👇')
+  log(`eslint-disable services ${ fileName }`)
+
+  let lineRuleIdsMap = lintingCache.get(fileName)
+  if (!lineRuleIdsMap) {
+
+    log(`${ basename } - Start linting file text...`)
+    showStatusBarItem('$(loading~spin) Start linting file text...', 0)
+
+    // FIXME: A workaround.
+    await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
+    const _startTime = Date.now()
+    const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath) // By debugging, it is a sync task，which makes `statusBarItem.show` cloud not render immediately.
+
+    log(`${ basename } - Linting finish(${ Date.now() - _startTime }ms).`)
+    showStatusBarItem(`$(check) Linting finish(${ Date.now() - _startTime }ms).`)
+
+
+    // eslint-disable-next-line require-atomic-updates
+    lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
+      if (!item.ruleId) return preValue
+      if (!preValue[item.line]) {
+        preValue[item.line] = [ item.ruleId ]
+      } else {
+        preValue[item.line] = [ ...new Set([ ...preValue[item.line], item.ruleId ]) ]
+      }
+      return preValue
+    }, {} as Record<number, string[]>) ?? {}
+
+    if (config.preLinting) {
+      lintingCache.set(fileName, lineRuleIdsMap)
+      log(`${ basename } - Set linting cache.`)
+    }
+  } else {
+    const parseFileName = path.parse(fileName).base
+    log(`${ basename } - Linting cache found.`)
+    showStatusBarItem(`Linting cache found at ${ parseFileName }.`)
+  }
+  filesBusy.set(fileName, false)
+
+  if (lineRuleIdsMap && !Object.keys(lineRuleIdsMap).length) {
+    log(`${ basename } - Everything is good.`, !silent, 'OK')
+    return false
+  } else {
+    log(`${ basename } - Problems found: ${ Object.values(lineRuleIdsMap).toString() } `)
+  }
+
+  !silent && activeTextEditor.selections.forEach(selection => {
+
+    const text = getTextBylines(selection.start.line, selection.end.line)
+    if (!text?.replace(/\n|\r/g, '')) {
+      log(`${ basename } - No content to disable.`, true, 'OK')
+      return
+    }
+
+    if (!Object.keys(lineRuleIdsMap!).some(problemLine =>
+      selection.start.line + 1 <= +problemLine && +problemLine <= selection.end.line + 1)) {
+      log(`${ basename } - No problem rules found from your selection.`, true, 'OK')
+      return
+    }
+
+    insert({ text, activeTextEditor, selection, lineRuleIdsMap: lineRuleIdsMap! })
+  })
+
+  return {
+    activeTextEditor,
+    basename,
+    lineRuleIdsMap,
+  }
+}
