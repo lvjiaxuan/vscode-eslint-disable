@@ -11,6 +11,8 @@ import path from 'node:path'
 let eslint: ESLint
 const lintingCache = new Map<string, Record<number, string[]>>()
 const filesBusy = new Map<string, boolean>()
+let reLintingTimer: NodeJS.Timeout
+
 
 export async function activate(context: ExtensionContext) {
   const _startTime = Date.now()
@@ -47,7 +49,6 @@ export async function activate(context: ExtensionContext) {
     window.activeTextEditor && void commands.executeCommand('eslint-disable.disable', true)
     window.onDidChangeActiveTextEditor(() => window.activeTextEditor && commands.executeCommand('eslint-disable.disable', true))
 
-    let timer: NodeJS.Timeout
     workspace.onDidChangeTextDocument(async event => {
       const fileName = event.document.fileName
 
@@ -63,8 +64,8 @@ export async function activate(context: ExtensionContext) {
       if (lintingCache.has(fileName)) {
         lintingCache.delete(fileName)
         log(`${ path.basename(fileName) } - Clear linting cache. Re-Linting after 5s.`)
-        clearTimeout(timer)
-        timer = setTimeout(() => void commands.executeCommand('eslint-disable.disable', true), 5 * 1000)
+        clearTimeout(reLintingTimer)
+        reLintingTimer = setTimeout(() => void commands.executeCommand('eslint-disable.disable', true), 5 * 1000)
       }
     })
   }
@@ -81,7 +82,8 @@ const disposes = [
 
   // disable lines
   commands.registerCommand('eslint-disable.disable', (silent = false) => {
-    // keep
+    clearTimeout(reLintingTimer)
+
     void disable(silent as boolean, ({ text, activeTextEditor, selection, lineRuleIdsMap }) => {
       let insertIndex = 0
       while (text.charAt(insertIndex) == ' ') {
