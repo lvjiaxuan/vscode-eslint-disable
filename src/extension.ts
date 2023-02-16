@@ -10,6 +10,7 @@ import path from 'node:path'
 
 let eslint: ESLint
 const lintingCache = new Map<string, Record<number, string[]>>()
+const filesBusy = new Map<string, boolean>()
 
 export async function activate(context: ExtensionContext) {
   const _startTime = Date.now()
@@ -71,6 +72,8 @@ export async function activate(context: ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  disposes.forEach(fn => fn.dispose())
   statusBarItem.value.dispose()
 }
 
@@ -78,7 +81,6 @@ const disposes = [
 
   // disable lines
   commands.registerCommand('eslint-disable.disable', async (silent = false) => {
-
     const activeTextEditor = window.activeTextEditor!
 
     const fileName = activeTextEditor.document.fileName
@@ -93,10 +95,15 @@ const disposes = [
       return
     }
 
+    if (filesBusy.get(fileName)) {
+      // Using keyboard shortcut, commands execute in serial.
+      // Under onDidChangeTextDocument, commands execute in parallel.
+      return
+    }
+    filesBusy.set(fileName, true)
 
     log('👇👇👇👇👇👇')
     log(`eslint-disable services ${ fileName }`)
-
 
     let lineRuleIdsMap = lintingCache.get(fileName)
     if (!lineRuleIdsMap) {
@@ -132,6 +139,7 @@ const disposes = [
       log(`${ basename } - Linting cache found.`)
       showStatusBarItem(`Linting cache found at ${ parseFileName }.`)
     }
+    filesBusy.set(fileName, false)
 
 
     if (lineRuleIdsMap && !Object.keys(lineRuleIdsMap).length) {
