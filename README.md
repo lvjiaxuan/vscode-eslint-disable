@@ -16,12 +16,7 @@
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
 
 ## Features
-
-- Simple snippets with typing `eslint-disable`.
-- Select one or **multiple lines** which has rule problems from extension of ESLint IntelliSense, and we could disable rules with:
-  - The editor context menu.
-  - Command: `eslint-disable.disable`.
-  - Keyboard shortcuts: `ctrl + alt + d`.
+Select one or **multiple lines** which has rule problems from extension of ESLint IntelliSense, and we could disable rules by `ctrl + alt + d`.
 
 > **Note**
 > 
@@ -36,4 +31,3 @@
 ## TODO
 
 - [ ] Support multi-selections disable at the same action.
-- [ ] Snippets support present problem rules.

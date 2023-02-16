@@ -1,13 +1,12 @@
 import { type ExtensionContext, Position, SnippetString, commands, window, workspace } from 'vscode'
 import type { ESLint } from 'eslint'
-import { getTextBylines } from './utils'
+import { existFile, getTextBylines } from './utils'
 import { workspacePath } from './global'
 import { constructESLint } from './eslint'
 import statusBarItem, { showStatusBarItem } from './statusBarItem'
 import log from './log'
 import config from './configuration'
 import path from 'node:path'
-import fs from 'node:fs'
 
 let eslint: ESLint
 const lintingCache = new Map<string, Record<number, string[]>>()
@@ -26,7 +25,6 @@ export async function activate(context: ExtensionContext) {
     return
   }
 
-
   eslint = await constructESLint({
     overrideConfig: {
       overrides: [
@@ -38,9 +36,7 @@ export async function activate(context: ExtensionContext) {
     },
   })
 
-
   context.subscriptions.push(...disposes, statusBarItem.value)
-
 
   log(`eslint-disable is activated!(${ Date.now() - _startTime }ms)!`)
   showStatusBarItem(`$(check) eslint-disable is activated!(${ Date.now() - _startTime }ms)!`)
@@ -49,21 +45,25 @@ export async function activate(context: ExtensionContext) {
   if (config.preLinting) {
     window.activeTextEditor && void commands.executeCommand('eslint-disable.disable', true)
     window.onDidChangeActiveTextEditor(() => window.activeTextEditor && commands.executeCommand('eslint-disable.disable', true))
-    workspace.onDidChangeTextDocument(event => {
+
+    let timer: NodeJS.Timeout
+    workspace.onDidChangeTextDocument(async event => {
       const fileName = event.document.fileName
 
-      if (!checkFileExist(event.document.fileName) || !event.contentChanges.length) {
+      if (!await existFile(event.document.fileName) || !event.contentChanges.length) {
         return
       }
 
       /**
        * It seems that inserting `// eslint-disable` is no need to clear cache.
        * But in actually, the line numbers on cache would be changed.
-       * Maybe I should re-compute these line numbers later.
+       * Maybe I should re-compute these line numbers in later.
        */
       if (lintingCache.has(fileName)) {
         lintingCache.delete(fileName)
-        log(`${ fileName } - Clear linting cache.`)
+        log(`${ path.basename(fileName) } - Clear linting cache. Re-Linting after 5s.`)
+        clearTimeout(timer)
+        timer = setTimeout(() => void commands.executeCommand('eslint-disable.disable', true), 5 * 1000)
       }
     })
   }
@@ -82,11 +82,11 @@ const disposes = [
     const activeTextEditor = window.activeTextEditor!
 
     const fileName = activeTextEditor.document.fileName
+    const basename = path.basename(fileName)
 
-    if (!checkFileExist(fileName)) {
+    if (!await existFile(fileName)) {
       return
     }
-
 
     if (activeTextEditor.selections.length > 1) {
       log('Sorry, we can not disable multi-selections for now. It will be supported in later version.', true, 'OK')
@@ -96,13 +96,12 @@ const disposes = [
 
     log('👇👇👇👇👇👇')
     log(`eslint-disable services ${ fileName }`)
-    log('👆👆👆👆👆👆')
 
 
     let lineRuleIdsMap = lintingCache.get(fileName)
     if (!lineRuleIdsMap) {
 
-      log(`${ fileName } - Start linting file text...`)
+      log(`${ basename } - Start linting file text...`)
       showStatusBarItem('$(loading~spin) Start linting file text...', 0)
 
       // FIXME: A workaround.
@@ -110,7 +109,7 @@ const disposes = [
       const _startTime = Date.now()
       const results = await eslint.lintFiles(activeTextEditor.document.uri.fsPath) // By debugging, it is a sync task，which makes `statusBarItem.show` cloud not render immediately.
 
-      log(`${ fileName } - Linting finish(${ Date.now() - _startTime }ms).`)
+      log(`${ basename } - Linting finish(${ Date.now() - _startTime }ms).`)
       showStatusBarItem(`$(check) Linting finish(${ Date.now() - _startTime }ms).`)
 
       // eslint-disable-next-line require-atomic-updates
@@ -126,33 +125,33 @@ const disposes = [
 
       if (config.preLinting) {
         lintingCache.set(fileName, lineRuleIdsMap)
-        log(`${ fileName } - Set linting cache.`)
+        log(`${ basename } - Set linting cache.`)
       }
     } else {
       const parseFileName = path.parse(fileName).base
-      log(`${ fileName } - Linting cache found.`)
+      log(`${ basename } - Linting cache found.`)
       showStatusBarItem(`Linting cache found at ${ parseFileName }.`)
     }
 
 
     if (lineRuleIdsMap && !Object.keys(lineRuleIdsMap).length) {
-      log(`${ fileName } - Everything is good.`, !silent, 'OK')
+      log(`${ basename } - Everything is good.`, !silent, 'OK')
       return
     } else {
-      log(`${ fileName } - Problems found: ${ Object.values(lineRuleIdsMap).toString() } `)
+      log(`${ basename } - Problems found: ${ Object.values(lineRuleIdsMap).toString() } `)
     }
 
     !silent && activeTextEditor.selections.forEach(selection => {
 
       const text = getTextBylines(selection.start.line, selection.end.line)
       if (!text?.replace(/\n|\r/g, '')) {
-        log(`${ fileName } - No content to disable.`, true, 'OK')
+        log(`${ basename } - No content to disable.`, true, 'OK')
         return
       }
 
       if (!Object.keys(lineRuleIdsMap!).some(problemLine =>
         selection.start.line + 1 <= +problemLine && +problemLine <= selection.end.line + 1)) {
-        log(`${ fileName } - No problem rules found from your selection.`, true, 'OK')
+        log(`${ basename } - No problem rules found from your selection.`, true, 'OK')
         return
       }
 
@@ -210,14 +209,3 @@ const disposes = [
     showStatusBarItem('$(check) Reloading finished.')
   }),
 ]
-
-
-function checkFileExist(fileName: string) {
-  try {
-    fs.statSync(fileName)
-  } catch {
-    // log(`Skip, no such file: ${ fileName }`)
-    return false
-  }
-  return true
-}
