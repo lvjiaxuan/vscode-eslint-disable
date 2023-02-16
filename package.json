@@ -2,7 +2,7 @@
   "publisher": "lvjiaxuan",
   "name": "vscode-eslint-disable",
   "displayName": "ESLint Disable",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Insert `eslint-disable` directive comment with present problem rules for VS Code.",
   "license": "MIT",
   "repository": {
@@ -98,7 +98,7 @@
     "@lvjiaxuan/eslint-plugin": "^0.4.2",
     "@types/eslint": "^8.21.1",
     "@types/node": "^18.13.0",
-    "@types/vscode": "^1.75.1",
+    "@types/vscode": "1.60.0",
     "@typescript-eslint/eslint-plugin": "^5.52.0",
     "@typescript-eslint/parser": "^5.52.0",
     "@vscode/test-electron": "^2.2.3",
