@@ -86,7 +86,7 @@
     "dev": "nr compile --watch",
     "vscode:prepublish": "nr compile",
     "pretest": "nr compile && nr lint",
-    "lint": "eslint . --fix --cache",
+    "lint": "eslint .",
     "pack": "vsce package",
     "publish": "vsce publish",
     "release": "nx jiti release.ts"
@@ -95,12 +95,12 @@
     "vscode-languageserver": "^8.1.0"
   },
   "devDependencies": {
-    "@lvjiaxuan/eslint-plugin": "^0.4.2",
+    "@lvjiaxuan/eslint-plugin": "^0.5.2",
     "@types/eslint": "^8.21.1",
-    "@types/node": "^18.13.0",
+    "@types/node": "^18.14.0",
     "@types/vscode": "1.60.0",
-    "@typescript-eslint/eslint-plugin": "^5.52.0",
-    "@typescript-eslint/parser": "^5.52.0",
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
     "@vscode/test-electron": "^2.2.3",
     "eslint": "^8.34.0",
     "tsup": "^6.6.3",

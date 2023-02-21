@@ -1,14 +1,15 @@
 import { type ExtensionContext, Position, Range, type Selection, SnippetString, type TextEditor, commands, window, workspace } from 'vscode'
-import type { ESLint } from 'eslint'
+import type { ESLint, Linter } from 'eslint'
 import { existFile, getTextBylines } from './utils'
 import { workspacePath } from './global'
-import { constructESLint } from './eslint'
+import { getESLintInstance, getESLintLinterInstance } from './eslint'
 import statusBarItem, { showStatusBarItem } from './statusBarItem'
 import log from './log'
 import config from './configuration'
 import path from 'node:path'
 
 let eslint: ESLint
+// let linter: Linter
 const lintingCache = new Map<string, Record<number, string[]>>()
 let reLintingTimer: NodeJS.Timeout
 
@@ -26,7 +27,7 @@ export async function activate(context: ExtensionContext) {
     return
   }
 
-  eslint = await constructESLint({
+  eslint = await getESLintInstance({
     overrideConfig: {
       overrides: [
         {
@@ -36,6 +37,8 @@ export async function activate(context: ExtensionContext) {
       ],
     },
   })
+
+  // linter = await getESLintLinterInstance()
 
   context.subscriptions.push(...disposes, statusBarItem.value)
 
@@ -188,7 +191,7 @@ const disposes = [
   commands.registerCommand('eslint-disable.reload', async () => {
     log('Reloading eslint-disable.')
     showStatusBarItem('$(loading~spin) Reloading eslint-disable.', 0)
-    eslint = await constructESLint({
+    eslint = await getESLintInstance({
       overrideConfig: {
         overrides: [
           {
