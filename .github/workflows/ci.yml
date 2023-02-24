@@ -39,12 +39,13 @@ jobs:
         with:
           version: 7
 
-      - run: pnpm config set auto-install-peers=true
-
-      - run: pnpm i -g @antfu/ni
+      - name: Setup
+        run: |
+          pnpm config set auto-install-peers=true
+          pnpm i -g @antfu/ni
 
       - run: |
-          pnpm i vsce -g
+          ni i vsce -g
           nci
           vsce publish -p $VSCE_TOKEN
         env:

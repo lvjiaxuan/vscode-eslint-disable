@@ -98,7 +98,7 @@ const disposes = [
         )
         delete lineRuleIdsMap[selection.start.line + 1]
       } else {
-        // Wrap lines. Press `ctrl+d `to edit rules at between lines.
+        // Wrap lines. Press `ctrl+d` to edit rules at between lines.
 
         const ruleIDSet = new Set<string>()
         for (const line in lineRuleIdsMap) {
@@ -133,7 +133,7 @@ const disposes = [
 
       let selectRules: string[] = []
       if (selection.isSingleLine) {
-        selectRules = lineRuleIdsMap[selection.start.line + 1] // .join('\\, ')
+        selectRules = lineRuleIdsMap[selection.start.line + 1]
         delete lineRuleIdsMap[selection.start.line + 1]
       } else {
         const ruleIDSet = new Set<string>()
@@ -143,7 +143,7 @@ const disposes = [
             delete lineRuleIdsMap[+line]
           }
         }
-        selectRules = [ ...ruleIDSet ] // .join('\\, ')
+        selectRules = [ ...ruleIDSet ]
       }
 
       if (match) {
@@ -241,8 +241,8 @@ async function disable(silent: boolean, insert: (opts: {
   let lineRuleIdsMap = lintingCache.get(fileName)
   if (!lineRuleIdsMap) {
 
-    log(`${ basename } - Start linting file content...`)
-    showStatusBarItem('$(loading~spin) Start linting file content...', 0)
+    log(`${ basename } - Linting ${ basename } content...`)
+    showStatusBarItem(`$(loading~spin) Linting ${ basename } content...`, 0)
 
     // FIXME: A workaround.
     await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
