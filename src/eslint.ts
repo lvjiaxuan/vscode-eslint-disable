@@ -4,6 +4,7 @@ import { workspacePath } from './global'
 import { exec } from 'node:child_process'
 import { ESLint, Linter } from 'eslint'
 import path from 'node:path'
+import { type ExtensionContext } from 'vscode'
 
 type PKG_MANAGERS = { agent: 'pnpm' | 'npm' | 'yarn', path: string }
 const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspacePath, message => { /**/ })
@@ -37,11 +38,17 @@ const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspace
     return Promise.reject('Fail to resolve global ESLint. Please install ESLint first.')
   })
 
-export const getESLintInstance = async (options?: ESLint.Options) => {
-  const eslintPath = 'E:\\Project\\@lvjiaxuan\\release\\node_modules\\.pnpm\\eslint@8.34.0\\node_modules\\eslint\\lib\\api.js'// await resolveESLintPath()
-  const eslintModule = await import(path.join(eslintPath)) as {
-    ESLint: typeof ESLint
+export const getESLintInstance = async (options: ESLint.Options = {}, context: ExtensionContext) => {
+
+  let eslintPath = context.workspaceState.get<string>('eslintPath')
+  if (!eslintPath) {
+    eslintPath = await resolveESLintPath()
+    void context.workspaceState.update('eslintPath', eslintPath)
+  } else {
+    log('ESLint path found from storage.')
   }
+
+  const eslintModule = await import(path.join(eslintPath)) as { ESLint: typeof ESLint }
 
   log(`ESLint library loaded from: ${ eslintPath }`)
   return new eslintModule.ESLint(options)
@@ -49,9 +56,7 @@ export const getESLintInstance = async (options?: ESLint.Options) => {
 
 export const getESLintLinterInstance = async (options?: ESLint.Options) => {
   const eslintPath = await resolveESLintPath()
-  const eslintModule = await import(path.join(eslintPath)) as {
-    Linter: typeof Linter
-  }
+  const eslintModule = await import(path.join(eslintPath)) as { Linter: typeof Linter }
 
   log(`ESLint library loaded from: ${ eslintPath }`)
   return new eslintModule.Linter()

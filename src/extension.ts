@@ -2,14 +2,13 @@ import { type ExtensionContext, Position, Range, type Selection, SnippetString, 
 import type { ESLint, Linter } from 'eslint'
 import { existFile, getTextBylines } from './utils'
 import { workspacePath } from './global'
-import { getESLintInstance, getESLintLinterInstance } from './eslint'
+import { getESLintInstance } from './eslint'
 import statusBarItem, { showStatusBarItem } from './statusBarItem'
 import log from './log'
 import config from './configuration'
 import path from 'node:path'
 
 let eslint: ESLint
-// let linter: Linter
 
 type FileName = string
 type LineNumber = number
@@ -18,9 +17,13 @@ const lintingCache = new Map<FileName, Map<LineNumber, LineRules>>()
 
 let reLintingTimer: NodeJS.Timeout
 
+let extensionContext: ExtensionContext
+
 export async function activate(context: ExtensionContext) {
   const _startTime = Date.now()
   log('eslint-disable is activating!')
+
+  extensionContext = context
 
   if (config.disable) {
     log('eslint-disable is disable.')
@@ -41,9 +44,7 @@ export async function activate(context: ExtensionContext) {
         },
       ],
     },
-  })
-
-  // linter = await getESLintLinterInstance()
+  }, context)
 
   context.subscriptions.push(...disposes, statusBarItem.value)
 
@@ -87,8 +88,7 @@ const disposes = [
 
   // Disable for lines
   commands.registerCommand('eslint-disable.disable', (silent = false) => {
-    clearTimeout(reLintingTimer)
-
+    // keep
     void disable(silent as boolean, ({ text, activeTextEditor, selection, lineRulesMap }) => {
       let insertIndex = 0
       while (text.charAt(insertIndex) == ' ') {
@@ -194,6 +194,10 @@ const disposes = [
   commands.registerCommand('eslint-disable.reload', async () => {
     log('Reloading eslint-disable.')
     showStatusBarItem('$(loading~spin) Reloading eslint-disable.', 0)
+    // 1. Clear storage
+    const storage = extensionContext.workspaceState
+    storage.keys().forEach(key => storage.update(key, null))
+    // 2. Re-get ESLint
     eslint = await getESLintInstance({
       overrideConfig: {
         overrides: [
@@ -203,7 +207,8 @@ const disposes = [
           },
         ],
       },
-    })
+    }, extensionContext)
+    // 3.
     lintingCache.clear()
     log('Reloading finished.')
     showStatusBarItem('$(check) Reloading finished.')
@@ -217,6 +222,8 @@ async function disable(silent: boolean, insert: (opts: {
   selection: Selection,
   lineRulesMap: NonNullable<ReturnType<(typeof lintingCache)['get']>>
 }) => void) {
+  clearTimeout(reLintingTimer)
+
   const activeTextEditor = window.activeTextEditor!
 
   const fileName = activeTextEditor.document.fileName
