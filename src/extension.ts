@@ -10,7 +10,12 @@ import path from 'node:path'
 
 let eslint: ESLint
 // let linter: Linter
-const lintingCache = new Map<string, Record<number, string[]>>()
+
+type FileName = string
+type LineNumber = number
+type LineRules = Set<string>
+const lintingCache = new Map<FileName, Map<LineNumber, LineRules>>()
+
 let reLintingTimer: NodeJS.Timeout
 
 export async function activate(context: ExtensionContext) {
@@ -84,7 +89,7 @@ const disposes = [
   commands.registerCommand('eslint-disable.disable', (silent = false) => {
     clearTimeout(reLintingTimer)
 
-    void disable(silent as boolean, ({ text, activeTextEditor, selection, lineRuleIdsMap }) => {
+    void disable(silent as boolean, ({ text, activeTextEditor, selection, lineRulesMap }) => {
       let insertIndex = 0
       while (text.charAt(insertIndex) == ' ') {
         insertIndex++
@@ -93,28 +98,28 @@ const disposes = [
       if (selection.isSingleLine) {
         // Insert at previous line.
         void activeTextEditor.insertSnippet(
-          new SnippetString(`// eslint-disable-next-line \${1|${ lineRuleIdsMap[selection.start.line + 1].join('\\, ') }|}\n`),
+          new SnippetString(`// eslint-disable-next-line \${1|${ [ ...lineRulesMap.get(selection.start.line + 1)!.values() ].join('\\, ') }|}\n`),
           new Position(selection.start.line, insertIndex),
         )
-        delete lineRuleIdsMap[selection.start.line + 1]
+        lineRulesMap.delete(selection.start.line + 1)
       } else {
-        // Wrap lines. Press `ctrl+d` to edit rules at between lines.
+        // Wrap lines and Press `ctrl+d` to edit rules between lines.
 
-        const ruleIDSet = new Set<string>()
-        for (const line in lineRuleIdsMap) {
-          if (selection.start.line + 1 <= +line && +line <= selection.end.line + 1) {
-            lineRuleIdsMap[+line].forEach(item => ruleIDSet.add(item))
-            delete lineRuleIdsMap[+line]
+        const rules = new Set<string>()
+        lineRulesMap.forEach((value, key) => {
+          if (selection.start.line + 1 <= +key && +key <= selection.end.line + 1) {
+            value.forEach(item => rules.add(item))
+            lineRulesMap.delete(+key)
           }
-        }
+        })
 
         void (async () => {
           await activeTextEditor.insertSnippet(
-            new SnippetString(`${ ' '.repeat(insertIndex) }/* eslint-enable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
+            new SnippetString(`${ ' '.repeat(insertIndex) }/* eslint-enable \${1|${ [ ...rules.values() ].join('\\, ') }|} */\n`),
             new Position(selection.end.line + 1, 0),
           )
           await activeTextEditor.insertSnippet(
-            new SnippetString(`/* eslint-disable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
+            new SnippetString(`/* eslint-disable \${1|${ [ ...rules.values() ].join('\\, ') }|} */\n`),
             new Position(selection.start.line, insertIndex),
           )
         })()
@@ -125,65 +130,65 @@ const disposes = [
   // Disable for entire
   commands.registerCommand('eslint-disable.entire', () => {
     // keep
-    const startLineText = getTextBylines(0)
-    const endLineText = window.activeTextEditor ? getTextBylines(window.activeTextEditor.document.lineCount - 2) : ''
-    const match = startLineText?.match(/\/\* eslint-disable (?<rules>.+) \*\//i)
+    // const startLineText = getTextBylines(0)
+    // const endLineText = window.activeTextEditor ? getTextBylines(window.activeTextEditor.document.lineCount - 2) : ''
+    // const match = startLineText?.match(/\/\* eslint-disable (?<rules>.+) \*\//i)
 
-    void disable(false, async ({ selection, activeTextEditor, lineRuleIdsMap }) => {
+    // void disable(false, async ({ selection, activeTextEditor, lineRulesMap }) => {
 
-      let selectRules: string[] = []
-      if (selection.isSingleLine) {
-        selectRules = lineRuleIdsMap[selection.start.line + 1]
-        delete lineRuleIdsMap[selection.start.line + 1]
-      } else {
-        const ruleIDSet = new Set<string>()
-        for (const line in lineRuleIdsMap) {
-          if (selection.start.line + 1 <= +line && +line <= selection.end.line + 1) {
-            lineRuleIdsMap[+line].forEach(item => ruleIDSet.add(item))
-            delete lineRuleIdsMap[+line]
-          }
-        }
-        selectRules = [ ...ruleIDSet ]
-      }
+    //   let selectRules: string[] = []
+    //   if (selection.isSingleLine) {
+    //     selectRules = lineRulesMap[selection.start.line + 1]
+    //     delete lineRulesMap[selection.start.line + 1]
+    //   } else {
+    //     const ruleIDSet = new Set<string>()
+    //     for (const line in lineRulesMap) {
+    //       if (selection.start.line + 1 <= +line && +line <= selection.end.line + 1) {
+    //         lineRulesMap[+line].forEach(item => ruleIDSet.add(item))
+    //         delete lineRulesMap[+line]
+    //       }
+    //     }
+    //     selectRules = [ ...ruleIDSet ]
+    //   }
 
-      if (match) {
-        const entireRules = match?.groups!.rules.replaceAll(' ', '').split(',') ?? []
-        const rules = [ ...new Set([ ...selectRules, ...entireRules ]) ]
+    //   if (match) {
+    //     const entireRules = match?.groups!.rules.replaceAll(' ', '').split(',') ?? []
+    //     const rules = [ ...new Set([ ...selectRules, ...entireRules ]) ]
 
-        await activeTextEditor.edit(editor => {
-          editor.delete(new Range(
-            new Position(0, 0),
-            new Position(0, Number.MAX_SAFE_INTEGER),
-          ))
+    //     await activeTextEditor.edit(editor => {
+    //       editor.delete(new Range(
+    //         new Position(0, 0),
+    //         new Position(0, Number.MAX_SAFE_INTEGER),
+    //       ))
 
-          if (endLineText?.startsWith('/* eslint-enable')) {
-            editor.delete(new Range(
-              new Position(activeTextEditor.document.lineCount - 2, 0),
-              new Position(activeTextEditor.document.lineCount - 2, Number.MAX_SAFE_INTEGER),
-            ))
-          }
-        })
+    //       if (endLineText?.startsWith('/* eslint-enable')) {
+    //         editor.delete(new Range(
+    //           new Position(activeTextEditor.document.lineCount - 2, 0),
+    //           new Position(activeTextEditor.document.lineCount - 2, Number.MAX_SAFE_INTEGER),
+    //         ))
+    //       }
+    //     })
 
-        await activeTextEditor.insertSnippet(
-          new SnippetString(`/* eslint-enable ${ rules.join(', ') } */`),
-          new Position(activeTextEditor.document.lineCount - 2, 0),
-        )
-        await activeTextEditor.insertSnippet(
-          new SnippetString(`/* eslint-disable ${ rules.join(', ') } */`),
-          new Position(0, 0),
-        )
+    //     await activeTextEditor.insertSnippet(
+    //       new SnippetString(`/* eslint-enable ${ rules.join(', ') } */`),
+    //       new Position(activeTextEditor.document.lineCount - 2, 0),
+    //     )
+    //     await activeTextEditor.insertSnippet(
+    //       new SnippetString(`/* eslint-disable ${ rules.join(', ') } */`),
+    //       new Position(0, 0),
+    //     )
 
-      } else {
-        await activeTextEditor.insertSnippet(
-          new SnippetString(`/* eslint-enable ${ selectRules.join(', ') } */\n`),
-          new Position(activeTextEditor.document.lineCount + 1, 0),
-        )
-        await activeTextEditor.insertSnippet(
-          new SnippetString(`/* eslint-disable ${ selectRules.join(', ') } */\n`),
-          new Position(0, 0),
-        )
-      }
-    })
+    //   } else {
+    //     await activeTextEditor.insertSnippet(
+    //       new SnippetString(`/* eslint-enable ${ selectRules.join(', ') } */\n`),
+    //       new Position(activeTextEditor.document.lineCount + 1, 0),
+    //     )
+    //     await activeTextEditor.insertSnippet(
+    //       new SnippetString(`/* eslint-disable ${ selectRules.join(', ') } */\n`),
+    //       new Position(0, 0),
+    //     )
+    //   }
+    // })
   }),
 
   // Reload
@@ -211,7 +216,7 @@ async function disable(silent: boolean, insert: (opts: {
   text: string,
   activeTextEditor: TextEditor,
   selection: Selection,
-  lineRuleIdsMap: NonNullable<ReturnType<(typeof lintingCache)['get']>>
+  lineRulesMap: NonNullable<ReturnType<(typeof lintingCache)['get']>>
 }) => void) {
   const activeTextEditor = window.activeTextEditor!
 
@@ -228,7 +233,7 @@ async function disable(silent: boolean, insert: (opts: {
   }
 
   if (filesBusy.get(fileName)) {
-    // Command would not await last command task, which execute in parallel.
+    // Command would not await last command task, which executes in parallel.
     return false
   }
   filesBusy.set(fileName, true)
@@ -237,11 +242,13 @@ async function disable(silent: boolean, insert: (opts: {
   log('👇👇👇👇👇👇')
   log(`eslint-disable services ${ fileName }`)
 
-  let lineRuleIdsMap = lintingCache.get(fileName)
-  if (!lineRuleIdsMap) {
+  await activeTextEditor.document.save()
 
-    log(`${ basename } - Linting ${ basename } content...`)
-    showStatusBarItem(`$(loading~spin) Linting ${ basename } content...`, 0)
+  let lineRulesMap = lintingCache.get(fileName)
+  if (!lineRulesMap) {
+
+    log(`${ basename } - Linting ${ basename }...`)
+    showStatusBarItem(`$(loading~spin) Linting ${ basename }...`, 0)
 
     // FIXME: A workaround.
     await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
@@ -251,34 +258,33 @@ async function disable(silent: boolean, insert: (opts: {
     log(`${ basename } - Linting finish(${ Date.now() - _startTime }ms).`)
     showStatusBarItem(`$(check) Linting finish(${ Date.now() - _startTime }ms).`)
 
-
     // eslint-disable-next-line require-atomic-updates
-    lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
+    lineRulesMap = results?.[0].messages.reduce((preValue, item) => {
       if (!item.ruleId) return preValue
-      if (!preValue[item.line]) {
-        preValue[item.line] = [ item.ruleId ]
+
+      if (!preValue.has(item.line)) {
+        preValue.set(item.line, new Set([ item.ruleId ]))
       } else {
-        preValue[item.line] = [ ...new Set([ ...preValue[item.line], item.ruleId ]) ]
+        preValue.set(item.line, preValue.get(item.line)!.add(item.ruleId))
       }
       return preValue
-    }, {} as Record<number, string[]>) ?? {}
+    }, new Map<LineNumber, LineRules>())
 
-    if (config.preLinting) {
-      lintingCache.set(fileName, lineRuleIdsMap)
-      log(`${ basename } - Set linting cache.`)
-    }
+    lintingCache.set(fileName, lineRulesMap)
+    log(`${ basename } - Set linting cache.`)
   } else {
-    const parseFileName = path.parse(fileName).base
     log(`${ basename } - Linting cache found.`)
-    showStatusBarItem(`Linting cache found at ${ parseFileName }.`)
+    showStatusBarItem(`Linting cache found for ${ path.parse(fileName).base }.`)
   }
   filesBusy.set(fileName, false)
 
-  if (lineRuleIdsMap && !Object.keys(lineRuleIdsMap).length) {
+  if (lineRulesMap && [ ...lineRulesMap.values() ].every(item => !item.size)) {
     log(`${ basename } - Everything is good.`, !silent, 'OK')
-    return false
+    return
   } else {
-    log(`${ basename } - Problems found: ${ Object.values(lineRuleIdsMap).toString() } `)
+    const allRules: string[] = []
+    lineRulesMap.forEach((value, key) => allRules.push(`${ key }-${ [ ...value.values() ].toString() }`))
+    log(`${ basename } - Problems found: ${ allRules.toString() } `)
   }
 
   !silent && activeTextEditor.selections.forEach(selection => {
@@ -289,14 +295,15 @@ async function disable(silent: boolean, insert: (opts: {
       return
     }
 
-    if (!Object.keys(lineRuleIdsMap!).some(problemLine =>
+
+    if (![ ...lineRulesMap!.keys() ].some(problemLine =>
       selection.start.line + 1 <= +problemLine && +problemLine <= selection.end.line + 1)) {
-      log(`${ basename } - No problem rules found from your selection.`, true, 'OK')
+      log(`${ basename } - No problem found on your selection.`, true, 'OK')
       return
     }
 
-    insert({ text, activeTextEditor, selection, lineRuleIdsMap: lineRuleIdsMap! })
+    insert({ text, activeTextEditor, selection, lineRulesMap: lineRulesMap! })
   })
 
-  return { activeTextEditor, basename, lineRuleIdsMap }
+  return { activeTextEditor, basename, lineRulesMap }
 }
