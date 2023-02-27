@@ -1,18 +1,22 @@
-import { type ExtensionContext, Position, type Selection, SnippetString, type TextEditor, commands, window, workspace } from 'vscode'
-import type { ESLint } from 'eslint'
+import { type ExtensionContext, Position, Range, type Selection, SnippetString, type TextEditor, commands, window, workspace } from 'vscode'
+import type { ESLint, Linter } from 'eslint'
 import { existFile, getTextBylines } from './utils'
 import { workspacePath } from './global'
-import { constructESLint } from './eslint'
+import { getESLintInstance, getESLintLinterInstance } from './eslint'
 import statusBarItem, { showStatusBarItem } from './statusBarItem'
 import log from './log'
 import config from './configuration'
 import path from 'node:path'
 
 let eslint: ESLint
-const lintingCache = new Map<string, Record<number, string[]>>()
-const filesBusy = new Map<string, boolean>()
-let reLintingTimer: NodeJS.Timeout
+// let linter: Linter
 
+type FileName = string
+type LineNumber = number
+type LineRules = Set<string>
+const lintingCache = new Map<FileName, Map<LineNumber, LineRules>>()
+
+let reLintingTimer: NodeJS.Timeout
 
 export async function activate(context: ExtensionContext) {
   const _startTime = Date.now()
@@ -28,7 +32,7 @@ export async function activate(context: ExtensionContext) {
     return
   }
 
-  eslint = await constructESLint({
+  eslint = await getESLintInstance({
     overrideConfig: {
       overrides: [
         {
@@ -39,6 +43,8 @@ export async function activate(context: ExtensionContext) {
     },
   })
 
+  // linter = await getESLintLinterInstance()
+
   context.subscriptions.push(...disposes, statusBarItem.value)
 
   log(`eslint-disable is activated!(${ Date.now() - _startTime }ms)!`)
@@ -48,7 +54,6 @@ export async function activate(context: ExtensionContext) {
   if (config.preLinting) {
     window.activeTextEditor && void commands.executeCommand('eslint-disable.disable', true)
     window.onDidChangeActiveTextEditor(() => window.activeTextEditor && commands.executeCommand('eslint-disable.disable', true))
-
     workspace.onDidChangeTextDocument(async event => {
       const fileName = event.document.fileName
 
@@ -58,7 +63,7 @@ export async function activate(context: ExtensionContext) {
 
       /**
        * It seems that inserting `// eslint-disable` is no need to clear cache.
-       * But in actually, the line numbers on cache would be changed.
+       * But in actually, the line numbers in cache would be changed.
        * Maybe I should re-compute these line numbers in later.
        */
       if (lintingCache.has(fileName)) {
@@ -80,11 +85,11 @@ export function deactivate() {
 
 const disposes = [
 
-  // disable lines
+  // Disable for lines
   commands.registerCommand('eslint-disable.disable', (silent = false) => {
     clearTimeout(reLintingTimer)
 
-    void disable(silent as boolean, ({ text, activeTextEditor, selection, lineRuleIdsMap }) => {
+    void disable(silent as boolean, ({ text, activeTextEditor, selection, lineRulesMap }) => {
       let insertIndex = 0
       while (text.charAt(insertIndex) == ' ') {
         insertIndex++
@@ -93,70 +98,103 @@ const disposes = [
       if (selection.isSingleLine) {
         // Insert at previous line.
         void activeTextEditor.insertSnippet(
-          new SnippetString(`// eslint-disable-next-line \${1|${ lineRuleIdsMap[selection.start.line + 1].join('\\, ') }|}\n`),
+          new SnippetString(`// eslint-disable-next-line ${ [ ...lineRulesMap.get(selection.start.line + 1)!.values() ].join('\\, ') }\n`),
           new Position(selection.start.line, insertIndex),
         )
-        delete lineRuleIdsMap[selection.start.line + 1]
+        lineRulesMap.delete(selection.start.line + 1)
       } else {
-        // Wrap lines. Press `ctrl+d `to edit rules at between lines.
+        // Wrap lines and Press `ctrl+d` to edit rules between lines.
 
-        const ruleIDSet = new Set<string>()
-        for (const line in lineRuleIdsMap) {
-          if (selection.start.line + 1 <= +line && +line <= selection.end.line + 1) {
-            lineRuleIdsMap[+line].forEach(item => ruleIDSet.add(item))
-            delete lineRuleIdsMap[+line]
+        const rules = new Set<string>()
+        lineRulesMap.forEach((value, key) => {
+          if (selection.start.line + 1 <= +key && +key <= selection.end.line + 1) {
+            value.forEach(item => rules.add(item))
+            lineRulesMap.delete(+key)
           }
-        }
+        })
 
-        void activeTextEditor.insertSnippet(
-          new SnippetString(`/* eslint-disable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
-          new Position(selection.start.line, insertIndex),
-        )
-        void activeTextEditor.insertSnippet(
-          new SnippetString(`${ ' '.repeat(insertIndex) }/* eslint-enable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
-          new Position(selection.end.line + 2, 0),
-        )
+        void (async () => {
+          await activeTextEditor.insertSnippet(
+            new SnippetString(`${ ' '.repeat(insertIndex) }/* eslint-enable ${ [ ...rules.values() ].join('\\, ') } */\n`),
+            new Position(selection.end.line + 1, 0),
+          )
+          await activeTextEditor.insertSnippet(
+            new SnippetString(`/* eslint-disable ${ [ ...rules.values() ].join('\\, ') } */\n`),
+            new Position(selection.start.line, insertIndex),
+          )
+        })()
       }
     })
   }),
 
-  // for entire
+  // Disable for entire
   commands.registerCommand('eslint-disable.entire', () => {
     // keep
-    void disable(false, ({ selection, activeTextEditor, lineRuleIdsMap }) => {
+    void disable(false, async ({ selection, activeTextEditor, lineRulesMap }) => {
+      const startLineText = getTextBylines(0)
+      const endLineText = getTextBylines(activeTextEditor.document.lineCount - 2)
+      const match = startLineText?.match(/\/\* eslint-disable (?<rules>.+) \*\//i)
 
-      let rules = ''
+      let foundRules: LineRules
       if (selection.isSingleLine) {
-        rules = lineRuleIdsMap[selection.start.line + 1].join('\\, ')
-        delete lineRuleIdsMap[selection.start.line + 1]
+        foundRules = lineRulesMap.get(selection.start.line + 1)!
+        lineRulesMap.delete(selection.start.line + 1)
       } else {
-        const ruleIDSet = new Set<string>()
-        for (const line in lineRuleIdsMap) {
-          if (selection.start.line + 1 <= +line && +line <= selection.end.line + 1) {
-            lineRuleIdsMap[+line].forEach(item => ruleIDSet.add(item))
-            delete lineRuleIdsMap[+line]
+        foundRules = new Set<string>()
+        lineRulesMap.forEach((value, key) => {
+          if (selection.start.line + 1 <= +key && +key <= selection.end.line + 1) {
+            value.forEach(item => foundRules.add(item))
+            lineRulesMap.delete(+key)
           }
-        }
-        rules = [ ...ruleIDSet ].join('\\, ')
+        })
       }
 
-      void activeTextEditor.insertSnippet(
-        new SnippetString(`/* eslint-disable \${1|${ rules }|} */\n`),
-        new Position(0, 0),
-      )
-      void activeTextEditor.insertSnippet(
-        new SnippetString(`/* eslint-enable \${1|${ rules }|} */\n`),
-        new Position(activeTextEditor.document.lineCount + 1, 0),
-      )
+      if (match) {
+        const entireRules = match?.groups!.rules.replaceAll(' ', '').split(',') ?? []
+        const rules = [ ...new Set([ ...foundRules, ...entireRules ]) ]
 
+        // Delete exist comments.
+        await activeTextEditor.edit(editor => {
+          editor.delete(new Range(
+            new Position(0, 0),
+            new Position(0, Number.MAX_SAFE_INTEGER),
+          ))
+
+          if (endLineText?.startsWith('/* eslint-enable')) {
+            editor.delete(new Range(
+              new Position(activeTextEditor.document.lineCount - 2, 0),
+              new Position(activeTextEditor.document.lineCount - 2, Number.MAX_SAFE_INTEGER),
+            ))
+          }
+        })
+
+        await activeTextEditor.insertSnippet(
+          new SnippetString(`/* eslint-enable ${ rules.join(', ') } */`),
+          new Position(activeTextEditor.document.lineCount - 2, 0),
+        )
+        await activeTextEditor.insertSnippet(
+          new SnippetString(`/* eslint-disable ${ rules.join(', ') } */`),
+          new Position(0, 0),
+        )
+
+      } else {
+        await activeTextEditor.insertSnippet(
+          new SnippetString(`/* eslint-enable ${ [ ...foundRules.values() ].toString() } */\n`),
+          new Position(activeTextEditor.document.lineCount + 1, 0),
+        )
+        await activeTextEditor.insertSnippet(
+          new SnippetString(`/* eslint-disable ${ [ ...foundRules.values() ].toString() } */\n`),
+          new Position(0, 0),
+        )
+      }
     })
   }),
 
-  // reload
+  // Reload
   commands.registerCommand('eslint-disable.reload', async () => {
     log('Reloading eslint-disable.')
     showStatusBarItem('$(loading~spin) Reloading eslint-disable.', 0)
-    eslint = await constructESLint({
+    eslint = await getESLintInstance({
       overrideConfig: {
         overrides: [
           {
@@ -172,11 +210,12 @@ const disposes = [
   }),
 ]
 
+const filesBusy = new Map<string, boolean>()
 async function disable(silent: boolean, insert: (opts: {
   text: string,
   activeTextEditor: TextEditor,
   selection: Selection,
-  lineRuleIdsMap: NonNullable<ReturnType<(typeof lintingCache)['get']>>
+  lineRulesMap: NonNullable<ReturnType<(typeof lintingCache)['get']>>
 }) => void) {
   const activeTextEditor = window.activeTextEditor!
 
@@ -193,20 +232,22 @@ async function disable(silent: boolean, insert: (opts: {
   }
 
   if (filesBusy.get(fileName)) {
-    // Using keyboard shortcut, commands execute in serial.
-    // Under onDidChangeTextDocument, commands execute in parallel.
+    // Command would not await last command task, which executes in parallel.
     return false
   }
   filesBusy.set(fileName, true)
 
+  log('')
   log('👇👇👇👇👇👇')
   log(`eslint-disable services ${ fileName }`)
 
-  let lineRuleIdsMap = lintingCache.get(fileName)
-  if (!lineRuleIdsMap) {
+  await activeTextEditor.document.save()
 
-    log(`${ basename } - Start linting file text...`)
-    showStatusBarItem('$(loading~spin) Start linting file text...', 0)
+  let lineRulesMap = lintingCache.get(fileName)
+  if (!lineRulesMap) {
+
+    log(`${ basename } - Linting ${ basename }...`)
+    showStatusBarItem(`$(loading~spin) Linting ${ basename }...`, 0)
 
     // FIXME: A workaround.
     await new Promise<void>(resolve => setTimeout(() => setTimeout(resolve)))
@@ -216,34 +257,33 @@ async function disable(silent: boolean, insert: (opts: {
     log(`${ basename } - Linting finish(${ Date.now() - _startTime }ms).`)
     showStatusBarItem(`$(check) Linting finish(${ Date.now() - _startTime }ms).`)
 
-
     // eslint-disable-next-line require-atomic-updates
-    lineRuleIdsMap = results?.[0].messages.reduce((preValue, item) => {
+    lineRulesMap = results?.[0].messages.reduce((preValue, item) => {
       if (!item.ruleId) return preValue
-      if (!preValue[item.line]) {
-        preValue[item.line] = [ item.ruleId ]
+
+      if (!preValue.has(item.line)) {
+        preValue.set(item.line, new Set([ item.ruleId ]))
       } else {
-        preValue[item.line] = [ ...new Set([ ...preValue[item.line], item.ruleId ]) ]
+        preValue.set(item.line, preValue.get(item.line)!.add(item.ruleId))
       }
       return preValue
-    }, {} as Record<number, string[]>) ?? {}
+    }, new Map<LineNumber, LineRules>())
 
-    if (config.preLinting) {
-      lintingCache.set(fileName, lineRuleIdsMap)
-      log(`${ basename } - Set linting cache.`)
-    }
+    lintingCache.set(fileName, lineRulesMap)
+    log(`${ basename } - Set linting cache.`)
   } else {
-    const parseFileName = path.parse(fileName).base
     log(`${ basename } - Linting cache found.`)
-    showStatusBarItem(`Linting cache found at ${ parseFileName }.`)
+    showStatusBarItem(`Linting cache found for ${ path.parse(fileName).base }.`)
   }
   filesBusy.set(fileName, false)
 
-  if (lineRuleIdsMap && !Object.keys(lineRuleIdsMap).length) {
+  if (lineRulesMap && [ ...lineRulesMap.values() ].every(item => !item.size)) {
     log(`${ basename } - Everything is good.`, !silent, 'OK')
-    return false
+    return
   } else {
-    log(`${ basename } - Problems found: ${ Object.values(lineRuleIdsMap).toString() } `)
+    const allRules: string[] = []
+    lineRulesMap.forEach((value, key) => allRules.push(`${ key }-${ [ ...value.values() ].toString() }`))
+    log(`${ basename } - Problems found: ${ allRules.toString() } `)
   }
 
   !silent && activeTextEditor.selections.forEach(selection => {
@@ -254,18 +294,15 @@ async function disable(silent: boolean, insert: (opts: {
       return
     }
 
-    if (!Object.keys(lineRuleIdsMap!).some(problemLine =>
+
+    if (![ ...lineRulesMap!.keys() ].some(problemLine =>
       selection.start.line + 1 <= +problemLine && +problemLine <= selection.end.line + 1)) {
-      log(`${ basename } - No problem rules found from your selection.`, true, 'OK')
+      log(`${ basename } - No problem found on your selection.`, true, 'OK')
       return
     }
 
-    insert({ text, activeTextEditor, selection, lineRuleIdsMap: lineRuleIdsMap! })
+    insert({ text, activeTextEditor, selection, lineRulesMap: lineRulesMap! })
   })
 
-  return {
-    activeTextEditor,
-    basename,
-    lineRuleIdsMap,
-  }
+  return { activeTextEditor, basename, lineRulesMap }
 }

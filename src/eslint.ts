@@ -2,7 +2,7 @@ import log from './log'
 import { Files } from 'vscode-languageserver/node'
 import { workspacePath } from './global'
 import { exec } from 'node:child_process'
-import type { ESLint } from 'eslint'
+import { ESLint, Linter } from 'eslint'
 import path from 'node:path'
 
 type PKG_MANAGERS = { agent: 'pnpm' | 'npm' | 'yarn', path: string }
@@ -37,12 +37,22 @@ const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspace
     return Promise.reject('Fail to resolve global ESLint. Please install ESLint first.')
   })
 
-export const constructESLint = async (options?: ESLint.Options) => {
-  const eslintPath = await resolveESLintPath()
+export const getESLintInstance = async (options?: ESLint.Options) => {
+  const eslintPath = 'E:\\Project\\@lvjiaxuan\\release\\node_modules\\.pnpm\\eslint@8.34.0\\node_modules\\eslint\\lib\\api.js'// await resolveESLintPath()
   const eslintModule = await import(path.join(eslintPath)) as {
-    ESLint: { new(options?: ESLint.Options): ESLint }
+    ESLint: typeof ESLint
   }
 
   log(`ESLint library loaded from: ${ eslintPath }`)
   return new eslintModule.ESLint(options)
+}
+
+export const getESLintLinterInstance = async (options?: ESLint.Options) => {
+  const eslintPath = await resolveESLintPath()
+  const eslintModule = await import(path.join(eslintPath)) as {
+    Linter: typeof Linter
+  }
+
+  log(`ESLint library loaded from: ${ eslintPath }`)
+  return new eslintModule.Linter()
 }
