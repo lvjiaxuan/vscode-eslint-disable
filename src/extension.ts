@@ -98,7 +98,7 @@ const disposes = [
       if (selection.isSingleLine) {
         // Insert at previous line.
         void activeTextEditor.insertSnippet(
-          new SnippetString(`// eslint-disable-next-line \${1|${ [ ...lineRulesMap.get(selection.start.line + 1)!.values() ].join('\\, ') }|}\n`),
+          new SnippetString(`// eslint-disable-next-line ${ [ ...lineRulesMap.get(selection.start.line + 1)!.values() ].join('\\, ') }\n`),
           new Position(selection.start.line, insertIndex),
         )
         lineRulesMap.delete(selection.start.line + 1)
@@ -115,11 +115,11 @@ const disposes = [
 
         void (async () => {
           await activeTextEditor.insertSnippet(
-            new SnippetString(`${ ' '.repeat(insertIndex) }/* eslint-enable \${1|${ [ ...rules.values() ].join('\\, ') }|} */\n`),
+            new SnippetString(`${ ' '.repeat(insertIndex) }/* eslint-enable ${ [ ...rules.values() ].join('\\, ') } */\n`),
             new Position(selection.end.line + 1, 0),
           )
           await activeTextEditor.insertSnippet(
-            new SnippetString(`/* eslint-disable \${1|${ [ ...rules.values() ].join('\\, ') }|} */\n`),
+            new SnippetString(`/* eslint-disable ${ [ ...rules.values() ].join('\\, ') } */\n`),
             new Position(selection.start.line, insertIndex),
           )
         })()
@@ -130,65 +130,64 @@ const disposes = [
   // Disable for entire
   commands.registerCommand('eslint-disable.entire', () => {
     // keep
-    // const startLineText = getTextBylines(0)
-    // const endLineText = window.activeTextEditor ? getTextBylines(window.activeTextEditor.document.lineCount - 2) : ''
-    // const match = startLineText?.match(/\/\* eslint-disable (?<rules>.+) \*\//i)
+    void disable(false, async ({ selection, activeTextEditor, lineRulesMap }) => {
+      const startLineText = getTextBylines(0)
+      const endLineText = getTextBylines(activeTextEditor.document.lineCount - 2)
+      const match = startLineText?.match(/\/\* eslint-disable (?<rules>.+) \*\//i)
 
-    // void disable(false, async ({ selection, activeTextEditor, lineRulesMap }) => {
+      let foundRules: LineRules
+      if (selection.isSingleLine) {
+        foundRules = lineRulesMap.get(selection.start.line + 1)!
+        lineRulesMap.delete(selection.start.line + 1)
+      } else {
+        foundRules = new Set<string>()
+        lineRulesMap.forEach((value, key) => {
+          if (selection.start.line + 1 <= +key && +key <= selection.end.line + 1) {
+            value.forEach(item => foundRules.add(item))
+            lineRulesMap.delete(+key)
+          }
+        })
+      }
 
-    //   let selectRules: string[] = []
-    //   if (selection.isSingleLine) {
-    //     selectRules = lineRulesMap[selection.start.line + 1]
-    //     delete lineRulesMap[selection.start.line + 1]
-    //   } else {
-    //     const ruleIDSet = new Set<string>()
-    //     for (const line in lineRulesMap) {
-    //       if (selection.start.line + 1 <= +line && +line <= selection.end.line + 1) {
-    //         lineRulesMap[+line].forEach(item => ruleIDSet.add(item))
-    //         delete lineRulesMap[+line]
-    //       }
-    //     }
-    //     selectRules = [ ...ruleIDSet ]
-    //   }
+      if (match) {
+        const entireRules = match?.groups!.rules.replaceAll(' ', '').split(',') ?? []
+        const rules = [ ...new Set([ ...foundRules, ...entireRules ]) ]
 
-    //   if (match) {
-    //     const entireRules = match?.groups!.rules.replaceAll(' ', '').split(',') ?? []
-    //     const rules = [ ...new Set([ ...selectRules, ...entireRules ]) ]
+        // Delete exist comments.
+        await activeTextEditor.edit(editor => {
+          editor.delete(new Range(
+            new Position(0, 0),
+            new Position(0, Number.MAX_SAFE_INTEGER),
+          ))
 
-    //     await activeTextEditor.edit(editor => {
-    //       editor.delete(new Range(
-    //         new Position(0, 0),
-    //         new Position(0, Number.MAX_SAFE_INTEGER),
-    //       ))
+          if (endLineText?.startsWith('/* eslint-enable')) {
+            editor.delete(new Range(
+              new Position(activeTextEditor.document.lineCount - 2, 0),
+              new Position(activeTextEditor.document.lineCount - 2, Number.MAX_SAFE_INTEGER),
+            ))
+          }
+        })
 
-    //       if (endLineText?.startsWith('/* eslint-enable')) {
-    //         editor.delete(new Range(
-    //           new Position(activeTextEditor.document.lineCount - 2, 0),
-    //           new Position(activeTextEditor.document.lineCount - 2, Number.MAX_SAFE_INTEGER),
-    //         ))
-    //       }
-    //     })
+        await activeTextEditor.insertSnippet(
+          new SnippetString(`/* eslint-enable ${ rules.join(', ') } */`),
+          new Position(activeTextEditor.document.lineCount - 2, 0),
+        )
+        await activeTextEditor.insertSnippet(
+          new SnippetString(`/* eslint-disable ${ rules.join(', ') } */`),
+          new Position(0, 0),
+        )
 
-    //     await activeTextEditor.insertSnippet(
-    //       new SnippetString(`/* eslint-enable ${ rules.join(', ') } */`),
-    //       new Position(activeTextEditor.document.lineCount - 2, 0),
-    //     )
-    //     await activeTextEditor.insertSnippet(
-    //       new SnippetString(`/* eslint-disable ${ rules.join(', ') } */`),
-    //       new Position(0, 0),
-    //     )
-
-    //   } else {
-    //     await activeTextEditor.insertSnippet(
-    //       new SnippetString(`/* eslint-enable ${ selectRules.join(', ') } */\n`),
-    //       new Position(activeTextEditor.document.lineCount + 1, 0),
-    //     )
-    //     await activeTextEditor.insertSnippet(
-    //       new SnippetString(`/* eslint-disable ${ selectRules.join(', ') } */\n`),
-    //       new Position(0, 0),
-    //     )
-    //   }
-    // })
+      } else {
+        await activeTextEditor.insertSnippet(
+          new SnippetString(`/* eslint-enable ${ [ ...foundRules.values() ].toString() } */\n`),
+          new Position(activeTextEditor.document.lineCount + 1, 0),
+        )
+        await activeTextEditor.insertSnippet(
+          new SnippetString(`/* eslint-disable ${ [ ...foundRules.values() ].toString() } */\n`),
+          new Position(0, 0),
+        )
+      }
+    })
   }),
 
   // Reload
