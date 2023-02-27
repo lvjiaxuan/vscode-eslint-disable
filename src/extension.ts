@@ -110,12 +110,12 @@ const disposes = [
 
         void (async () => {
           await activeTextEditor.insertSnippet(
-            new SnippetString(`/* eslint-disable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
-            new Position(selection.start.line, insertIndex),
+            new SnippetString(`${ ' '.repeat(insertIndex) }/* eslint-enable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
+            new Position(selection.end.line + 1, 0),
           )
           await activeTextEditor.insertSnippet(
-            new SnippetString(`${ ' '.repeat(insertIndex) }/* eslint-enable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
-            new Position(selection.end.line + 2, 0),
+            new SnippetString(`/* eslint-disable \${1|${ [ ...ruleIDSet ].join('\\, ') }|} */\n`),
+            new Position(selection.start.line, insertIndex),
           )
         })()
       }
@@ -149,7 +149,6 @@ const disposes = [
       if (match) {
         const entireRules = match?.groups!.rules.replaceAll(' ', '').split(',') ?? []
         const rules = [ ...new Set([ ...selectRules, ...entireRules ]) ]
-
 
         await activeTextEditor.edit(editor => {
           editor.delete(new Range(
