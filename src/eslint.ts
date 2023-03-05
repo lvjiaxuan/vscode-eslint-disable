@@ -5,6 +5,7 @@ import { exec } from 'node:child_process'
 import { ESLint, Linter } from 'eslint'
 import path from 'node:path'
 import { type ExtensionContext } from 'vscode'
+import { existFile } from './utils'
 
 type PKG_MANAGERS = { agent: 'pnpm' | 'npm' | 'yarn', path: string }
 const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspacePath, message => { /**/ })
@@ -39,13 +40,12 @@ const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspace
   })
 
 export const getESLintInstance = async (options: ESLint.Options = {}, context: ExtensionContext) => {
-
   let eslintPath = context.workspaceState.get<string>('eslintPath')
-  if (!eslintPath) {
+  if (eslintPath && await existFile(eslintPath)) {
+    log('ESLint path found from storage')
+  } else {
     eslintPath = await resolveESLintPath()
     void context.workspaceState.update('eslintPath', eslintPath)
-  } else {
-    log('ESLint path found from storage.')
   }
 
   const eslintModule = await import(path.join(eslintPath)) as { ESLint: typeof ESLint }
@@ -54,7 +54,7 @@ export const getESLintInstance = async (options: ESLint.Options = {}, context: E
   return new eslintModule.ESLint(options)
 }
 
-export const getESLintLinterInstance = async (options?: ESLint.Options) => {
+export const getESLintLinterInstance = async () => {
   const eslintPath = await resolveESLintPath()
   const eslintModule = await import(path.join(eslintPath)) as { Linter: typeof Linter }
 
