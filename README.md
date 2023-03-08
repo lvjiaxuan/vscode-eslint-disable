@@ -21,7 +21,7 @@ Select one or **multiple lines** which have rule problems from the extension of 
 
 > **Note**
 > 
-> It doesn't need to select entire characters of lines. See preview below.
+> It doesn't need to select all text of lines. See preview below.
 
 ## Preview
 
