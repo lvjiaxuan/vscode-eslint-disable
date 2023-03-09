@@ -1,13 +1,20 @@
 # Changelog
 
-Tag ranges `v0.0.1...v0.2.1`. [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+Tag ranges `v0.0.1...v0.3.0` (13). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+
+## v0.3.0 <sub>(2023-03-09)</sub>
+[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.2.1...main)
+
+### &nbsp;&nbsp;&nbsp;✨ Enhancements
+
+- support flat connfig. close #9. &nbsp;-&nbsp; by @lvjiaxuan in [#9](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/9) [<samp>(4d7f0)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/4d7f058)
 
 ## v0.2.1 <sub>(2023-03-05)</sub>
-[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.2.0...main)
+[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.2.0...v0.2.1)
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
-- cache outdate. &nbsp;-&nbsp; by **unknown** [<samp>(a83ee)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/a83ee61)
+- cache outdate. &nbsp;-&nbsp; by @lvjiaxuan [<samp>(a83ee)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/a83ee61)
 
 ## v0.2.0 <sub>(2023-02-27)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.1.0...v0.2.0)
