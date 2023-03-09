@@ -1,7 +1,7 @@
 import { window } from 'vscode'
 
 
-const channel = window.createOutputChannel('vscode-eslint-disable')
+const channel = window.createOutputChannel('VSCode ESLint Disable')
 const getNowFormat = () => {
   const nowDate = new Date()
   return `${ nowDate.getHours() }:${ nowDate.getMinutes() }:${ nowDate.getSeconds() }:${ nowDate.getMilliseconds() }`

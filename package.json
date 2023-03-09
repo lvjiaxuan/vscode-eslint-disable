@@ -45,12 +45,17 @@
         "eslint-disable.disable": {
           "type": "boolean",
           "default": false,
-          "description": "Disable the eslint-disable extension."
+          "description": "Controls whether eslint-disable is enabled or not."
         },
         "eslint-disable.preLinting": {
           "type": "boolean",
           "default": true,
-          "description": "Pre-Linting after activeTextEditor open."
+          "description": "Enables pre-linting after activeTextEditor open."
+        },
+        "eslint-disable.useFlatConfig": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enables support of experimental Flat Config (aka eslint.config.js, supported by ESLint version 8.21 or later)."
         }
       }
     },
@@ -95,21 +100,15 @@
     "vscode-languageserver": "^8.1.0"
   },
   "devDependencies": {
-    "@lvjiaxuan/eslint-plugin": "^0.5.2",
+    "@lvjiaxuan/eslint-plugin": "^0.8.3",
     "@types/eslint": "^8.21.1",
-    "@types/node": "^18.14.2",
+    "@types/node": "^18.14.6",
     "@types/vscode": "1.60.0",
-    "@typescript-eslint/eslint-plugin": "^5.53.0",
-    "@typescript-eslint/parser": "^5.53.0",
-    "@vscode/test-electron": "^2.2.3",
     "eslint": "^8.35.0",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5"
   },
   "eslintConfig": {
-    "extends": "plugin:@lvjiaxuan/recommended",
-    "rules": {
-      "no-promise-executor-return": "off"
-    }
+    "extends": "plugin:@lvjiaxuan/recommended"
   }
 }

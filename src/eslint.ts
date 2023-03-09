@@ -6,9 +6,12 @@ import { ESLint, Linter } from 'eslint'
 import path from 'node:path'
 import { type ExtensionContext } from 'vscode'
 import { existFile } from './utils'
+import config from './configuration'
+
+const useFlatConfig = config.useFlatConfig
 
 type PKG_MANAGERS = { agent: 'pnpm' | 'npm' | 'yarn', path: string }
-const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspacePath, message => { /**/ })
+const resolveESLintPath = () => Files.resolve(`eslint${ useFlatConfig ? '/use-at-your-own-risk' : '' }`, workspacePath, workspacePath, message => { /**/ })
   .catch(() => {
     log('Fail to resolve local ESLint. Trying globally...')
     return Promise.allSettled<PKG_MANAGERS>(
@@ -39,19 +42,41 @@ const resolveESLintPath = () => Files.resolve('eslint', workspacePath, workspace
     return Promise.reject('Fail to resolve global ESLint. Please install ESLint first.')
   })
 
-export const getESLintInstance = async (options: ESLint.Options = {}, context: ExtensionContext) => {
-  let eslintPath = context.workspaceState.get<string>('eslintPath')
+export const getESLintInstance = async (context: ExtensionContext) => {
+  let eslintPath = context.workspaceState.get<string>(useFlatConfig ? 'flatESLintPath' : 'eslintPath')
   if (eslintPath && await existFile(eslintPath)) {
-    log('ESLint path found from storage')
+    log(`${ useFlatConfig ? 'Flat ' : '' }ESLint path found from storage`)
   } else {
     eslintPath = await resolveESLintPath()
     void context.workspaceState.update('eslintPath', eslintPath)
   }
 
-  const eslintModule = await import(path.join(eslintPath)) as { ESLint: typeof ESLint }
+  const eslintModule = await import(path.join(eslintPath)) as {
+    ESLint: typeof ESLint
+    FlatESLint: typeof ESLint
+  }
 
-  log(`ESLint library loaded from: ${ eslintPath }`)
-  return new eslintModule.ESLint(options)
+  log(`${ useFlatConfig ? 'Flat ' : '' }ESLint library loaded from: ${ eslintPath }`)
+  return useFlatConfig
+    ? new eslintModule.FlatESLint({
+      cwd: workspacePath,
+      overrideConfig: {
+        // @ts-ignore
+        files: [ '**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts' ],
+        languageOptions: { parserOptions: { tsconfigRootDir: workspacePath } },
+      },
+    })
+    : new eslintModule.ESLint({
+      cwd: workspacePath,
+      overrideConfig: {
+        overrides: [
+          {
+            files: [ '*.ts', '*.d.ts', '*.tsx', '*.vue' ],
+            parserOptions: { tsconfigRootDir: workspacePath },
+          },
+        ],
+      },
+    })
 }
 
 export const getESLintLinterInstance = async () => {

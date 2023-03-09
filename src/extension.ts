@@ -1,5 +1,5 @@
 import { type ExtensionContext, Position, Range, type Selection, SnippetString, type TextEditor, commands, window, workspace } from 'vscode'
-import type { ESLint, Linter } from 'eslint'
+import type { ESLint } from 'eslint'
 import { existFile, getTextBylines } from './utils'
 import { workspacePath } from './global'
 import { getESLintInstance } from './eslint'
@@ -35,16 +35,7 @@ export async function activate(context: ExtensionContext) {
     return
   }
 
-  eslint = await getESLintInstance({
-    overrideConfig: {
-      overrides: [
-        {
-          files: [ '*.ts', '*.d.ts', '*.tsx', '*.vue' ],
-          parserOptions: { tsconfigRootDir: workspacePath },
-        },
-      ],
-    },
-  }, context)
+  eslint = await getESLintInstance(context)
 
   context.subscriptions.push(...disposes, statusBarItem.value)
 
@@ -198,16 +189,7 @@ const disposes = [
     const storage = extensionContext.workspaceState
     storage.keys().forEach(key => storage.update(key, null))
     // 2. Re-get ESLint
-    eslint = await getESLintInstance({
-      overrideConfig: {
-        overrides: [
-          {
-            files: [ '*.ts', '*.d.ts', '*.tsx', '*.vue' ],
-            parserOptions: { tsconfigRootDir: workspacePath },
-          },
-        ],
-      },
-    }, extensionContext)
+    eslint = await getESLintInstance(extensionContext)
     // 3.
     lintingCache.clear()
     log('Reloading finished.')
