@@ -15,7 +15,7 @@ type LineNumber = number
 type LineRules = Set<string>
 const lintingCache = new Map<FileName, Map<LineNumber, LineRules>>()
 
-let reLintingTimer: NodeJS.Timeout
+let reLintingTimer: ReturnType<typeof setTimeout>
 
 let extensionContext: ExtensionContext
 

@@ -21,7 +21,7 @@ export const showStatusBarItem = (text: string, time = 5000) => {
   time > 0 && hideStatusBarItem(time)
 }
 
-let hideTimer: NodeJS.Timeout
+let hideTimer: ReturnType<typeof setTimeout>
 export const hideStatusBarItem = (delay = 5000) => {
   clearTimeout(hideTimer)
   hideTimer = setTimeout(() => statusBarItem.hide(), delay)

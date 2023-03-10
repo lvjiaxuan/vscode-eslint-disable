@@ -87,28 +87,24 @@
     ]
   },
   "scripts": {
-    "compile": "tsup src/extension.ts --external=vscode --format=cjs --shims=false --clean",
+    "compile": "tsup src/extension.ts --external=vscode --clean",
     "dev": "nr compile --watch",
     "vscode:prepublish": "nr compile",
     "pretest": "nr compile && nr lint",
     "lint": "eslint .",
     "pack": "vsce package",
-    "publish": "vsce publish",
-    "release": "nx jiti release.ts"
+    "publish": "vsce publish"
   },
   "dependencies": {
     "vscode-languageserver": "^8.1.0"
   },
   "devDependencies": {
-    "@lvjiaxuan/eslint-plugin": "^0.8.3",
+    "@lvjiaxuan/eslint-plugin": "^0.10.1",
     "@types/eslint": "^8.21.1",
-    "@types/node": "^18.14.6",
+    "@types/node": "^18.15.0",
     "@types/vscode": "1.60.0",
-    "eslint": "^8.35.0",
+    "eslint": "^8.36.0",
     "tsup": "^6.6.3",
     "typescript": "^4.9.5"
-  },
-  "eslintConfig": {
-    "extends": "plugin:@lvjiaxuan/recommended"
   }
 }

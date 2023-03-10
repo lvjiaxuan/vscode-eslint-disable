@@ -11,12 +11,12 @@ export const getTextBylines = (startLine: number, endLine?: number) =>
 
 export function existFile(file: string): Promise<boolean> {
   return new Promise<boolean>((resolve, _reject) => {
-    // keep
+    // console.log(file)
     fs.stat(file, (error, stats) => {
       if (error !== null) {
         resolve(false)
       }
-      resolve(stats.isFile())
+      resolve(stats?.isFile() ?? false)
     })
   })
 }
