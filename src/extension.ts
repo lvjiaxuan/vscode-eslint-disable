@@ -215,6 +215,10 @@ async function disable(silent: boolean, insert: (opts: {
     return false
   }
 
+  if (await eslint.isPathIgnored(fileName)) {
+    return false
+  }
+
   if (activeTextEditor.selections.length > 1) {
     log('Sorry, we can not disable multi-selections for now. It will be supported in later version.', true, 'OK')
     return false
