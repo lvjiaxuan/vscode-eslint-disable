@@ -1,9 +1,16 @@
 # Changelog
 
-Tag ranges `v0.0.1...v0.3.0` (13). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+Tag ranges `v0.0.1...v0.3.1` (14). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+
+## v0.3.1 <sub>(2023-03-10)</sub>
+[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.3.0...main)
+
+### &nbsp;&nbsp;&nbsp;🐛 Fixes
+
+- im not sure &nbsp;-&nbsp; by @lvjiaxuan [<samp>(d4d5d)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/d4d5d39)
 
 ## v0.3.0 <sub>(2023-03-09)</sub>
-[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.2.1...main)
+[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.2.1...v0.3.0)
 
 ### &nbsp;&nbsp;&nbsp;✨ Enhancements
 
