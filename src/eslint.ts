@@ -43,12 +43,13 @@ const resolveESLintPath = () => Files.resolve(`eslint${ useFlatConfig ? '/use-at
   })
 
 export const getESLintInstance = async (context: ExtensionContext) => {
-  let eslintPath = context.workspaceState.get<string>(useFlatConfig ? 'flatESLintPath' : 'eslintPath')
+  const stateKey = useFlatConfig ? 'flatESLintPath' : 'eslintPath'
+  let eslintPath = context.workspaceState.get<string>(stateKey)
   if (eslintPath && await existFile(eslintPath)) {
     log(`${ useFlatConfig ? 'Flat ' : '' }ESLint path found from storage`)
   } else {
     eslintPath = await resolveESLintPath()
-    void context.workspaceState.update('eslintPath', eslintPath)
+    void context.workspaceState.update(stateKey, eslintPath)
   }
 
   const eslintModule = await import(path.join(eslintPath)) as {
