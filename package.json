@@ -96,6 +96,7 @@
     "publish": "vsce publish"
   },
   "dependencies": {
+    "vscode-languageclient": "^8.1.0",
     "vscode-languageserver": "^8.1.0"
   },
   "devDependencies": {

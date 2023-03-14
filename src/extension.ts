@@ -42,30 +42,7 @@ export async function activate(context: ExtensionContext) {
   log(`eslint-disable is activated!(${ Date.now() - _startTime }ms)!`)
   showStatusBarItem(`$(check) eslint-disable is activated!(${ Date.now() - _startTime }ms)!`)
 
-  log(`Pre-Linting is ${ config.preLinting ? 'enable' : 'disable' }.`)
-  if (config.preLinting) {
-    window.activeTextEditor && void commands.executeCommand('eslint-disable.disable', true)
-    window.onDidChangeActiveTextEditor(() => window.activeTextEditor && commands.executeCommand('eslint-disable.disable', true))
-    workspace.onDidChangeTextDocument(async event => {
-      const fileName = event.document.fileName
-
-      if (!await existFile(event.document.fileName) || !event.contentChanges.length) {
-        return
-      }
-
-      /**
-       * It seems that inserting `// eslint-disable` is no need to clear cache.
-       * But in actually, the line numbers in cache would be changed.
-       * Maybe I should re-compute these line numbers in later.
-       */
-      if (lintingCache.has(fileName)) {
-        lintingCache.delete(fileName)
-        log(`${ path.basename(fileName) } - Clear linting cache. Re-Linting after 5s.`)
-        clearTimeout(reLintingTimer)
-        reLintingTimer = setTimeout(() => void commands.executeCommand('eslint-disable.disable', true), 5 * 1000)
-      }
-    })
-  }
+  enablePreLinting(config.preLinting)
 }
 
 // this method is called when your extension is deactivated
@@ -298,4 +275,33 @@ async function disable(silent: boolean, insert: (opts: {
   })
 
   return { activeTextEditor, basename, lineRulesMap }
+}
+
+function enablePreLinting(preLinting: boolean) {
+  log(`Pre-Linting is ${ preLinting ? 'enable' : 'disable' }.`)
+  if (preLinting) {
+    window.activeTextEditor && void commands.executeCommand('eslint-disable.disable', true)
+    window.onDidChangeActiveTextEditor(() => window.activeTextEditor && commands.executeCommand('eslint-disable.disable', true))
+    workspace.onDidChangeTextDocument(async event => {
+      const fileName = event.document.fileName
+
+      if (!await existFile(event.document.fileName) || !event.contentChanges.length) {
+        return
+      }
+
+      /**
+       * It seems that inserting `// eslint-disable` is no need to clear cache.
+       * But in actually, the line numbers in cache would be changed.
+       * Maybe I should re-compute these line numbers in later.
+       */
+      if (lintingCache.has(fileName)) {
+        lintingCache.delete(fileName)
+        log(`${ path.basename(fileName) } - Clear linting cache. Re-Linting after 5s.`)
+        clearTimeout(reLintingTimer)
+        reLintingTimer = setTimeout(() => void commands.executeCommand('eslint-disable.disable', true), 5 * 1000)
+      }
+    })
+    // @ts-ignore
+    // enablePreLinting.enabled = true
+  }
 }

@@ -1,5 +1,6 @@
 import log from './log'
 import { Files } from 'vscode-languageserver/node'
+import { LanguageClient } from 'vscode-languageclient/node'
 import { workspacePath } from './global'
 import { exec } from 'node:child_process'
 import { ESLint, Linter } from 'eslint'

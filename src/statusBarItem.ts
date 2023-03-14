@@ -16,13 +16,17 @@ export default {
 }
 
 export const showStatusBarItem = (text: string, time = 5000) => {
-  statusBarItem.text = text
-  statusBarItem.show()
-  time > 0 && hideStatusBarItem(time)
+  try {
+    statusBarItem.text = text
+    statusBarItem.show()
+    time > 0 && hideStatusBarItem(time)
+  } catch {}
 }
 
 let hideTimer: ReturnType<typeof setTimeout>
 export const hideStatusBarItem = (delay = 5000) => {
-  clearTimeout(hideTimer)
-  hideTimer = setTimeout(() => statusBarItem.hide(), delay)
+  try {
+    clearTimeout(hideTimer)
+    hideTimer = setTimeout(() => statusBarItem.hide(), delay)
+  } catch {}
 }
