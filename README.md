@@ -29,7 +29,7 @@ Select one or **multiple lines** which have rule problems from the extension of 
 
 ![](assets/2.gif)
 
-## Support [Flat Config](https://eslint.org/docs/latest/use/configure/configuration-files-new)
+## ~~Support [Flat Config](https://eslint.org/docs/latest/use/configure/configuration-files-new)(WIP)~~
 
 1. Place an `eslint.config.js` file in the root of your project.
 2. Enable `eslint.experimental.useFlatConfig` in `settings.json`.
