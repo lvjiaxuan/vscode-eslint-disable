@@ -16,7 +16,7 @@
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
 
 ## Features
-Select one or **multiple lines** which have rule problems from the extension of ESLint IntelliSense, and we could either disable rules for lines by `ctrl + alt + d` or disable for the entire file by `ctrl + alt + e`.
+Select single or **multiple lines** which have rule problems from the extension of ESLint IntelliSense, and it could either disable rules for lines by `ctrl + alt + d` or disable for the entire file by `ctrl + alt + e`.
 
 
 > **Note**
@@ -25,14 +25,13 @@ Select one or **multiple lines** which have rule problems from the extension of 
 
 ## Preview
 
-![](assets/1.gif)
+For single line.
 
-![](assets/2.gif)
+![single](assets/1.gif)
 
-## ~~Support [Flat Config](https://eslint.org/docs/latest/use/configure/configuration-files-new)(WIP)~~
 
-1. Place an `eslint.config.js` file in the root of your project.
-2. Enable `eslint.experimental.useFlatConfig` in `settings.json`.
+For multiple lines, press `ctrl + d` to select another pair in other side.
+![multiple](assets/2.gif)
 
 ## TODO
 

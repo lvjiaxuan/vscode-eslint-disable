@@ -33,32 +33,8 @@
       {
         "command": "eslint-disable.entire",
         "title": "eslint-disable: disable for entire file"
-      },
-      {
-        "command": "eslint-disable.reload",
-        "title": "eslint-disable: reload"
       }
     ],
-    "configuration": {
-      "title": "ESLint Disable",
-      "properties": {
-        "eslint-disable.disable": {
-          "type": "boolean",
-          "default": false,
-          "description": "Controls whether eslint-disable is enabled or not."
-        },
-        "eslint-disable.preLinting": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enables pre-linting after activeTextEditor open."
-        },
-        "eslint-disable.useFlatConfig": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enables support of experimental Flat Config (aka eslint.config.js, supported by ESLint version 8.21 or later)."
-        }
-      }
-    },
     "menus": {
       "editor/context": [
         {
@@ -94,10 +70,6 @@
     "lint": "eslint .",
     "pack": "vsce package",
     "publish": "vsce publish"
-  },
-  "dependencies": {
-    "vscode-languageclient": "^8.1.0",
-    "vscode-languageserver": "^8.1.0"
   },
   "devDependencies": {
     "@lvjiaxuan/eslint-plugin": "^0.10.1",
