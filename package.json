@@ -101,11 +101,11 @@
   },
   "devDependencies": {
     "@lvjiaxuan/eslint-plugin": "^0.10.1",
-    "@types/eslint": "^8.21.1",
-    "@types/node": "^18.15.0",
+    "@types/eslint": "^8.21.3",
+    "@types/node": "^18.15.3",
     "@types/vscode": "1.60.0",
     "eslint": "^8.36.0",
-    "tsup": "^6.6.3",
+    "tsup": "^6.7.0",
     "typescript": "^4.9.5"
   }
 }
