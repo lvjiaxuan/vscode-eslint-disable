@@ -40,10 +40,10 @@ jobs:
       - name: Setup
         run: |
           pnpm config set auto-install-peers=true
-          pnpm i -g @antfu/ni
+          pnpm i @antfu/ni -g
 
       - run: |
-          ni i vsce -g
+          pnpm i @vscode/vsce -g
           nci
           vsce publish -p $VSCE_TOKEN
         env:
