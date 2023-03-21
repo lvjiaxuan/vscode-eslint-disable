@@ -1,5 +1,6 @@
-import { ExtensionContext, Position, Range, Selection, SnippetString, commands, languages, window } from 'vscode'
+import { ExtensionContext, Position, Range, SnippetString, commands, languages, window } from 'vscode'
 import { existFileSync, getTextBylines } from './utils'
+import { getBlockComment, getExtension, getLineComment } from './languageDefaults'
 import log from './log'
 import path from 'node:path'
 
@@ -41,10 +42,13 @@ const disableForLines = commands.registerCommand('eslint-disable.disable', () =>
     return insertRules
   }, new Set<string>())
 
+  const lineComment = getLineComment(activeTextEditor.document.languageId)
+  const blockComment = getBlockComment(activeTextEditor.document.languageId)
+
   if (selection.isSingleLine) {
     // Insert at previous line.
     void activeTextEditor.insertSnippet(
-      new SnippetString(`// eslint-disable-next-line \${1:${ [ ...insertRules ].join(', ') }}\n`),
+      new SnippetString(`${ lineComment } eslint-disable-next-line \${1:${ [ ...insertRules ].join(', ') }}\n`),
       new Position(selection.start.line, insertIndex),
     )
   } else {
@@ -52,11 +56,11 @@ const disableForLines = commands.registerCommand('eslint-disable.disable', () =>
 
     void (async () => {
       await activeTextEditor.insertSnippet(
-        new SnippetString(`${ ' '.repeat(insertIndex) }/* eslint-enable ${ [ ...insertRules ].join(', ') } */\n`),
+        new SnippetString(`${ ' '.repeat(insertIndex) }${ blockComment[0] } eslint-enable ${ [ ...insertRules ].join(', ') } ${ blockComment[1] }\n`),
         new Position(selection.end.line + 1, 0),
       )
       await activeTextEditor.insertSnippet(
-        new SnippetString(`/* eslint-disable \${1:${ [ ...insertRules ].join(', ') }} */\n`),
+        new SnippetString(`${ blockComment[0] } eslint-disable \${1:${ [ ...insertRules ].join(', ') }} ${ blockComment[1] }\n`),
         new Position(selection.start.line, insertIndex),
       )
     })()
@@ -91,6 +95,9 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
   const startLineText = getTextBylines(0)
   const startLineTextMatch = startLineText?.match(/\/\* eslint-disable (?<rules>.+) \*\//i)
 
+  const lineComment = getLineComment(activeTextEditor.document.languageId)
+  const blockComment = getBlockComment(activeTextEditor.document.languageId)
+
   if (startLineTextMatch) {
     const currentRules = startLineTextMatch?.groups!.rules.replaceAll(' ', '').split(',') ?? []
     currentRules.forEach(item => insertRules.add(item))
@@ -104,7 +111,7 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
       ))
 
       const endLineText = getTextBylines(activeTextEditor.document.lineCount - 2)
-      if (endLineText?.startsWith('/* eslint-enable')) {
+      if (endLineText?.startsWith(`${ blockComment[0] } eslint-enable`)) {
         editor.delete(new Range(
           new Position(activeTextEditor.document.lineCount - 2, 0),
           new Position(activeTextEditor.document.lineCount - 2, Number.MAX_SAFE_INTEGER),
@@ -113,20 +120,20 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
     })
 
     await activeTextEditor.insertSnippet(
-      new SnippetString(`/* eslint-enable ${ [ ...insertRules ].join(', ') } */`),
+      new SnippetString(`${ blockComment[0] } eslint-enable ${ [ ...insertRules ].join(', ') } ${ blockComment[1] }`),
       new Position(activeTextEditor.document.lineCount - 2, 0),
     )
     await activeTextEditor.insertSnippet(
-      new SnippetString(`/* eslint-disable ${ [ ...insertRules ].join(', ') } */`),
+      new SnippetString(`${ blockComment[0] } eslint-disable ${ [ ...insertRules ].join(', ') } ${ blockComment[1] }`),
       new Position(0, 0),
     )
   } else {
     await activeTextEditor.insertSnippet(
-      new SnippetString(`/* eslint-enable ${ [ ...insertRules ].join(', ') } */\n`),
+      new SnippetString(`${ blockComment[0] } eslint-enable ${ [ ...insertRules ].join(', ') } ${ blockComment[1] }\n`),
       new Position(activeTextEditor.document.lineCount + 1, 0),
     )
     await activeTextEditor.insertSnippet(
-      new SnippetString(`/* eslint-disable ${ [ ...insertRules ].join(', ') } */\n`),
+      new SnippetString(`${ blockComment[0] } eslint-disable ${ [ ...insertRules ].join(', ') } ${ blockComment[1] }\n`),
       new Position(0, 0),
     )
   }
@@ -136,6 +143,7 @@ const disableAllForFile = commands.registerCommand('eslint-disable.all', () => {
   // ...
   void commands.executeCommand('eslint-disable.entire', true)
 })
+
 
 function getESLintDiagnostics() {
   const { activeTextEditor } = window
