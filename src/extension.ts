@@ -6,12 +6,14 @@ import path from 'node:path'
 export function activate(context: ExtensionContext) {
 
   context.subscriptions.push(disableForLines)
-  context.subscriptions.push(disableForEntire)
+  context.subscriptions.push(disableForFile)
+  context.subscriptions.push(disableAllForFile)
 }
 
 export function deactivate() {
   disableForLines.dispose()
-  disableForEntire.dispose()
+  disableForFile.dispose()
+  disableAllForFile.dispose()
 }
 
 const disableForLines = commands.registerCommand('eslint-disable.disable', () => {
@@ -61,22 +63,24 @@ const disableForLines = commands.registerCommand('eslint-disable.disable', () =>
   }
 })
 
-const disableForEntire = commands.registerCommand('eslint-disable.entire', async () => {
+const disableForFile = commands.registerCommand('eslint-disable.entire', async (allRules: false) => {
   const result = getESLintDiagnostics()
   if (!result) {
     return
   }
 
-  const { text, selection, activeTextEditor, eslintDiagnostics } = result
+  const { selection, activeTextEditor, eslintDiagnostics } = result
 
-  // @ts-ignore
-  let insertRules: Set<string> = eslintDiagnostics.reduce((insertRules, item) => {
+  let insertRules = eslintDiagnostics.reduce((insertRules, item) => {
 
-    const isRuleInLine = selection.isSingleLine
-      ? item.range.start.line === selection.start.line
-      : selection.start.line + 1 <= item.range.start.line && item.range.start.line <= selection.end.line + 1
+    let isAlwaysAdd: boolean = allRules
+    if (!isAlwaysAdd) {
+      isAlwaysAdd = selection.isSingleLine
+        ? item.range.start.line === selection.start.line
+        : selection.start.line + 1 <= item.range.start.line && item.range.start.line <= selection.end.line + 1
+    }
 
-    if (isRuleInLine) {
+    if (isAlwaysAdd) {
       // @ts-ignore
       insertRules.add(item.code.value as string)
     }
@@ -126,6 +130,11 @@ const disableForEntire = commands.registerCommand('eslint-disable.entire', async
       new Position(0, 0),
     )
   }
+})
+
+const disableAllForFile = commands.registerCommand('eslint-disable.all', () => {
+  // ...
+  void commands.executeCommand('eslint-disable.entire', true)
 })
 
 function getESLintDiagnostics() {

@@ -33,6 +33,10 @@
       {
         "command": "eslint-disable.entire",
         "title": "eslint-disable: disable for entire file"
+      },
+      {
+        "command": "eslint-disable.all",
+        "title": "eslint-disable: disable all rules for entire file"
       }
     ],
     "menus": {
@@ -43,6 +47,10 @@
         },
         {
           "command": "eslint-disable.entire",
+          "group": "1_modification"
+        },
+        {
+          "command": "eslint-disable.all",
           "group": "1_modification"
         }
       ]
@@ -58,6 +66,12 @@
         "command": "eslint-disable.entire",
         "key": "ctrl+alt+e",
         "mac": "ctrl+alt+e",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "eslint-disable.all",
+        "key": "ctrl+alt+a",
+        "mac": "ctrl+alt+a",
         "when": "editorTextFocus"
       }
     ]

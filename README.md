@@ -18,7 +18,8 @@
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
 
 ## Features
-Select single or **multiple lines** which have rule problems from the extension of ESLint IntelliSense, and it could either disable rules for lines by `ctrl + alt + d` or disable for the entire file by `ctrl + alt + e`.
+1. Select single or **multiple lines** which have rule problems from the extension of ESLint IntelliSense, and it could either disable rules for lines by `ctrl + alt + d` or disable for the entire file by `ctrl + alt + e`.
+2. Disable all problem rules by `ctrl + alt + a`.
 
 
 > **Note**
@@ -33,6 +34,7 @@ For single line.
 
 
 For multiple lines, press `ctrl + d` to select another pair in other side.
+
 ![multiple](assets/2.gif)
 
 ## TODO
