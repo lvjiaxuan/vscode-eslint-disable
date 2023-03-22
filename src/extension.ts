@@ -49,7 +49,7 @@ const disableForLines = commands.registerCommand('eslint-disable.disable', () =>
     // Insert at previous line.
     void activeTextEditor.insertSnippet(
       new SnippetString(`${ lineComment } eslint-disable-next-line \${1:${ [ ...insertRules ].join(', ') }}\n`),
-      new Position(selection.start.line, insertIndex),
+      new Position(selection.anchor.line, insertIndex),
     )
   } else {
     // Wrap lines and Press `ctrl+d` to edit rules between lines.
@@ -68,7 +68,7 @@ const disableForLines = commands.registerCommand('eslint-disable.disable', () =>
 })
 
 const disableForFile = commands.registerCommand('eslint-disable.entire', async (allRules: false) => {
-  const result = getESLintDiagnostics()
+  const result = getESLintDiagnostics(allRules)
   if (!result) {
     return
   }
@@ -106,14 +106,14 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
 
       editor.delete(new Range(
         new Position(0, 0),
-        new Position(0, Number.MAX_SAFE_INTEGER),
+        new Position(0, Number.MAX_VALUE),
       ))
 
       const endLineText = getTextBylines(activeTextEditor.document.lineCount - 2)
       if (endLineText?.startsWith(`${ blockComment[0] } eslint-enable`)) {
         editor.delete(new Range(
           new Position(activeTextEditor.document.lineCount - 2, 0),
-          new Position(activeTextEditor.document.lineCount - 2, Number.MAX_SAFE_INTEGER),
+          new Position(activeTextEditor.document.lineCount - 2, Number.MAX_VALUE),
         ))
       }
     })
@@ -138,13 +138,13 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
   }
 
   activeTextEditor.revealRange(
-    new Range(new Position(selection.start.line, 0), new Position(selection.start.line, 0)),
+    new Range(new Position(selection.anchor.line, 0), new Position(selection.anchor.line, 0)),
     TextEditorRevealType.InCenterIfOutsideViewport,
   )
 
   activeTextEditor.selection = new Selection(
-    new Position(selection.start.line + 1, selection.start.character),
-    new Position(selection.start.line + 1, selection.start.character),
+    new Position(selection.end.line + 1, Number.MAX_VALUE),
+    new Position(selection.end.line + 1, Number.MAX_VALUE),
   )
 })
 
@@ -154,7 +154,7 @@ const disableAllForFile = commands.registerCommand('eslint-disable.all', () => {
 })
 
 
-function getESLintDiagnostics() {
+function getESLintDiagnostics(allRules = false) {
   const { activeTextEditor } = window
 
   if (!activeTextEditor) {
@@ -183,10 +183,18 @@ function getESLintDiagnostics() {
   const diagnostics = languages.getDiagnostics()
   const diagnosticOfUri = diagnostics.find(item => item[0].toString() === uri)
   const eslintDiagnostics = diagnosticOfUri?.[1].filter(item => item.source === 'eslint') ?? []
-  if (!eslintDiagnostics.length) {
-    log(`${ basename } - No problem found on your selection.`, true, 'OK')
+  const selectionDiagnostics = eslintDiagnostics.filter(item =>
+    selection.start.line <= item.range.start.line && item.range.start.line <= selection.end.line)
+
+  if (allRules && !eslintDiagnostics.length) {
+    log(`${ basename } - No problems found on this file.`, true, 'OK')
     return
   }
 
-  return { text, selection, activeTextEditor, eslintDiagnostics }
+  if (!allRules && !selectionDiagnostics.length) {
+    log(`${ basename } - No problems found on this selection.`, true, 'OK')
+    return
+  }
+
+  return { text, selection, activeTextEditor, eslintDiagnostics, selectionDiagnostics }
 }
