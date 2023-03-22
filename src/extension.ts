@@ -33,7 +33,7 @@ const disableForLines = commands.registerCommand('eslint-disable.disable', () =>
   const insertRules = eslintDiagnostics.reduce((insertRules, item) => {
     const isRuleInLine = selection.isSingleLine
       ? item.range.start.line === selection.start.line
-      : selection.start.line + 1 <= item.range.start.line && item.range.start.line <= selection.end.line + 1
+      : selection.start.line <= item.range.start.line && item.range.start.line <= selection.end.line
 
     if (isRuleInLine) {
       // @ts-ignore
@@ -81,7 +81,7 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
     if (!isAlwaysAdd) {
       isAlwaysAdd = selection.isSingleLine
         ? item.range.start.line === selection.start.line
-        : selection.start.line + 1 <= item.range.start.line && item.range.start.line <= selection.end.line + 1
+        : selection.start.line <= item.range.start.line && item.range.start.line <= selection.end.line
     }
 
     if (isAlwaysAdd) {
