@@ -1,4 +1,4 @@
-import { ExtensionContext, Position, Range, SnippetString, commands, languages, window } from 'vscode'
+import { ExtensionContext, Position, Range, Selection, SnippetString, TextEditorRevealType, commands, languages, window } from 'vscode'
 import { existFileSync, getTextBylines } from './utils'
 import { getBlockComment, getExtension, getLineComment } from './languageDefaults'
 import log from './log'
@@ -95,7 +95,6 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
   const startLineText = getTextBylines(0)
   const startLineTextMatch = startLineText?.match(/\/\* eslint-disable (?<rules>.+) \*\//i)
 
-  const lineComment = getLineComment(activeTextEditor.document.languageId)
   const blockComment = getBlockComment(activeTextEditor.document.languageId)
 
   if (startLineTextMatch) {
@@ -137,6 +136,16 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
       new Position(0, 0),
     )
   }
+
+  activeTextEditor.revealRange(
+    new Range(new Position(selection.start.line, 0), new Position(selection.start.line, 0)),
+    TextEditorRevealType.InCenterIfOutsideViewport,
+  )
+
+  activeTextEditor.selection = new Selection(
+    new Position(selection.start.line + 1, selection.start.character),
+    new Position(selection.start.line + 1, selection.start.character),
+  )
 })
 
 const disableAllForFile = commands.registerCommand('eslint-disable.all', () => {
