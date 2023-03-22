@@ -23,24 +23,15 @@ const disableForLines = commands.registerCommand('eslint-disable.disable', () =>
     return
   }
 
-  const { text, selection, activeTextEditor, eslintDiagnostics } = result
+  const { text, selection, activeTextEditor, eslintDiagnostics, selectionDiagnostics } = result
 
   let insertIndex = 0
   while (text.charAt(insertIndex) == ' ') {
     insertIndex++
   }
 
-  const insertRules = eslintDiagnostics.reduce((insertRules, item) => {
-    const isRuleInLine = selection.isSingleLine
-      ? item.range.start.line === selection.start.line
-      : selection.start.line <= item.range.start.line && item.range.start.line <= selection.end.line
-
-    if (isRuleInLine) {
-      // @ts-ignore
-      insertRules.add(item.code.value as string)
-    }
-    return insertRules
-  }, new Set<string>())
+  // @ts-ignore
+  const insertRules = new Set(selectionDiagnostics.map(item => item.code.value as string))
 
   const lineComment = getLineComment(activeTextEditor.document.languageId)
   const blockComment = getBlockComment(activeTextEditor.document.languageId)
@@ -73,23 +64,10 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
     return
   }
 
-  const { selection, activeTextEditor, eslintDiagnostics } = result
+  const { selection, activeTextEditor, eslintDiagnostics, selectionDiagnostics } = result
 
-  let insertRules = eslintDiagnostics.reduce((insertRules, item) => {
-
-    let isAlwaysAdd: boolean = allRules
-    if (!isAlwaysAdd) {
-      isAlwaysAdd = selection.isSingleLine
-        ? item.range.start.line === selection.start.line
-        : selection.start.line <= item.range.start.line && item.range.start.line <= selection.end.line
-    }
-
-    if (isAlwaysAdd) {
-      // @ts-ignore
-      insertRules.add(item.code.value as string)
-    }
-    return insertRules
-  }, new Set<string>())
+  // @ts-ignore
+  const insertRules = new Set((allRules ? eslintDiagnostics : selectionDiagnostics).map(item => item.code.value as string))
 
   // TODO Maybe not 0 line.
   const startLineText = getTextBylines(0)
