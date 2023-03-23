@@ -71,7 +71,19 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
 
   // TODO Maybe not 0 line.
   const startLineText = getTextBylines(0)
-  const startLineTextMatch = startLineText?.match(/\/\* eslint-disable (?<rules>.+) \*\//i)
+  const startLineTextMatch = startLineText?.match(/\/\*\s*eslint-disable\s+(?<rules>.+)\s*\*\//i)
+
+  const endLineWithText = (function finEndLineText(line = activeTextEditor.document.lineCount): { text: string, line: number } {
+    const text = getTextBylines(line - 1)?.trim()
+    if (!text) {
+      return finEndLineText(line - 1)
+    }
+    return { text, line }
+  }())
+
+
+  const isEndLineHasText = endLineWithText.line === activeTextEditor.document.lineCount
+  const isEndCommentMatch = endLineWithText.text.trim().match(/\/\*\s*eslint-enable.*\*\//i)
 
   const blockComment = getBlockComment(activeTextEditor.document.languageId)
 
@@ -79,38 +91,65 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
     const currentRules = startLineTextMatch?.groups!.rules.replaceAll(' ', '').split(',') ?? []
     currentRules.forEach(item => insertRules.add(item))
 
-    // Delete exist comments.
-    await activeTextEditor.edit(editor => {
+    /**
+     * howToInsertEndComments
+     *
+     * 1. 尾行有值，但不是end comment：新起一行，尾带换行
+     * 2. 尾行有值，且是end comment：删除，然后替换当前行，换行
+     * 3. 尾行无值，最近有值尾行不是end comment：直接插入，尾带换行
+     * 4. 尾行无值，最近有值尾行是end comment：删除，然后替换当前行
+     */
 
+    // Delete existing comments.
+    await activeTextEditor.edit(editor => {
       editor.delete(new Range(
         new Position(0, 0),
         new Position(0, Number.MAX_VALUE),
       ))
 
-      const endLineText = getTextBylines(activeTextEditor.document.lineCount - 2)
-      if (endLineText?.startsWith(`${ blockComment[0] } eslint-enable`)) {
+      if (isEndCommentMatch) {
+        console.log(123123)
         editor.delete(new Range(
-          new Position(activeTextEditor.document.lineCount - 2, 0),
-          new Position(activeTextEditor.document.lineCount - 2, Number.MAX_VALUE),
+          new Position(endLineWithText.line - 1, 0),
+          new Position(endLineWithText.line - 1, Number.MAX_VALUE),
         ))
       }
     })
 
+    const sorted = [ ...insertRules ].sort((a, b) => a > b ? 1 : -1)
+
+    let snippetString: string
+    let insertLine: number
+    if (isEndLineHasText && !isEndCommentMatch) {
+      snippetString = `\n${ blockComment[0] } eslint-enable ${ sorted.join(', ') } ${ blockComment[1] }\n`
+      insertLine = activeTextEditor.document.lineCount
+    } else if (isEndLineHasText && isEndCommentMatch) {
+      snippetString = `${ blockComment[0] } eslint-enable ${ sorted.join(', ') } ${ blockComment[1] }\n`
+      insertLine = endLineWithText.line
+    } else if (!isEndCommentMatch) {
+      snippetString = `${ blockComment[0] } eslint-enable ${ sorted.join(', ') } ${ blockComment[1] }\n`
+      insertLine = activeTextEditor.document.lineCount
+    } else {
+      snippetString = `${ blockComment[0] } eslint-enable ${ sorted.join(', ') } ${ blockComment[1] }`
+      insertLine = endLineWithText.line - 1
+    }
+
     await activeTextEditor.insertSnippet(
-      new SnippetString(`${ blockComment[0] } eslint-enable ${ [ ...insertRules ].join(', ') } ${ blockComment[1] }`),
-      new Position(activeTextEditor.document.lineCount - 2, 0),
+      new SnippetString(snippetString!),
+      new Position(insertLine!, 0),
     )
     await activeTextEditor.insertSnippet(
-      new SnippetString(`${ blockComment[0] } eslint-disable ${ [ ...insertRules ].join(', ') } ${ blockComment[1] }`),
+      new SnippetString(`${ blockComment[0] } eslint-disable ${ sorted.join(', ') } ${ blockComment[1] }`),
       new Position(0, 0),
     )
   } else {
+    const sorted = [ ...insertRules ].sort((a, b) => a > b ? 1 : -1)
     await activeTextEditor.insertSnippet(
-      new SnippetString(`${ blockComment[0] } eslint-enable ${ [ ...insertRules ].join(', ') } ${ blockComment[1] }\n`),
+      new SnippetString(`${ isEndLineHasText && !isEndCommentMatch ? '\n' : '' }${ blockComment[0] } eslint-enable ${ sorted.join(', ') } ${ blockComment[1] }\n`),
       new Position(activeTextEditor.document.lineCount + 1, 0),
     )
     await activeTextEditor.insertSnippet(
-      new SnippetString(`${ blockComment[0] } eslint-disable ${ [ ...insertRules ].join(', ') } ${ blockComment[1] }\n`),
+      new SnippetString(`${ blockComment[0] } eslint-disable ${ sorted.join(', ') } ${ blockComment[1] }\n`),
       new Position(0, 0),
     )
   }

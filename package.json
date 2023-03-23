@@ -78,7 +78,7 @@
   },
   "scripts": {
     "compile": "tsup src/extension.ts --external=vscode --clean",
-    "dev": "nr compile --watch",
+    "dev": "nr compile --watch --sourcemap",
     "vscode:prepublish": "nr compile",
     "pretest": "nr compile && nr lint",
     "lint": "eslint .",
