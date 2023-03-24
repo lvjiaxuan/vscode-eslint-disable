@@ -1,6 +1,6 @@
 import { ExtensionContext, Position, Range, Selection, SnippetString, TextEditorRevealType, commands, languages, window } from 'vscode'
 import { existFileSync, getTextBylines } from './utils'
-import { getBlockComment, getExtension, getLineComment } from './languageDefaults'
+import { blockCommentRegex, getBlockComment, getLineComment } from './languageDefaults'
 import log from './log'
 import path from 'node:path'
 
@@ -69,9 +69,13 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
   // @ts-ignore
   const insertRules = new Set((allRules ? eslintDiagnostics : selectionDiagnostics).map(item => item.code.value as string))
 
+  const blockComment = getBlockComment(activeTextEditor.document.languageId)
+
   // TODO Maybe not 0 line.
   const startLineText = getTextBylines(0)
-  const startLineTextMatch = startLineText?.match(/\/\*\s*eslint-disable\s+(?<rules>.+)\s*\*\//i)
+  const startLineTextMatch = startLineText?.trim().match(
+    new RegExp(`${ blockCommentRegex[blockComment[0]] ?? blockComment[0] }\\s*eslint-disable\\s+(?<rules>.+)\\s*${ blockCommentRegex[blockComment[1]] ?? blockComment[1] }`, 'i'),
+  )
 
   const endLineWithText = (function finEndLineText(line = activeTextEditor.document.lineCount): { text: string, line: number } {
     const text = getTextBylines(line - 1)?.trim()
@@ -83,9 +87,9 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
 
 
   const isEndLineHasText = endLineWithText.line === activeTextEditor.document.lineCount
-  const isEndCommentMatch = endLineWithText.text.trim().match(/\/\*\s*eslint-enable.*\*\//i)
-
-  const blockComment = getBlockComment(activeTextEditor.document.languageId)
+  const isEndCommentMatch = endLineWithText.text.trim().match(
+    new RegExp(`${ blockCommentRegex[blockComment[0]] ?? blockComment[0] }\\s*eslint-enable.*?${ blockCommentRegex[blockComment[1]] ?? blockComment[1] }`, 'i'),
+  )
 
   if (startLineTextMatch) {
     const currentRules = startLineTextMatch?.groups!.rules.replaceAll(' ', '').split(',') ?? []
@@ -108,7 +112,6 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
       ))
 
       if (isEndCommentMatch) {
-        console.log(123123)
         editor.delete(new Range(
           new Position(endLineWithText.line - 1, 0),
           new Position(endLineWithText.line - 1, Number.MAX_VALUE),

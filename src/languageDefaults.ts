@@ -18,6 +18,11 @@ const languageId2Config: Map<string, LanguageConfig> = new Map([
   [ 'graphql', { ext: 'graphql', lineComment: '#', blockComment: [ '#', '' ] } ],
 ])
 
+export const blockCommentRegex: { [x: string]: string } = {
+  '/*': '\\/\\*',
+  '*/': '\\*\\/',
+}
+
 export function getLineComment(languageId: string): string {
   return languageId2Config.get(languageId)?.lineComment ?? '//'
 }
