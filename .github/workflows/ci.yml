@@ -13,7 +13,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18
 
       - run: npx lvr --release
         env:
@@ -30,19 +30,15 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
         with:
-          node-version: 16
+          node-version: 18
           registry-url: https://registry.npmjs.org
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 7
-
-      - name: Setup
-        run: |
-          pnpm config set auto-install-peers=true
-          pnpm i @antfu/ni -g
+          version: 8
 
       - run: |
+          pnpm i @antfu/ni -g
           pnpm i @vscode/vsce -g
           nci
           vsce publish -p $VSCE_TOKEN

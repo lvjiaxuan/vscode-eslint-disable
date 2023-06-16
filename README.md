@@ -6,10 +6,9 @@
 
 <hr />
 
-<p align="center">Insert `eslint-disable` directive comment with present problem rules for VS Code.</p>
+<p align="center">Using hotkeys to insert the corresponding disabling rules comment.</p>
 
 ![](https://github.com/lvjiaxuan/vscode-eslint-disable/actions/workflows/ci.yml/badge.svg)
-
 [![](https://img.shields.io/visual-studio-marketplace/v/lvjiaxuan.vscode-eslint-disable?color=%232ba1f1&logo=visual-studio-code&logoColor=%232ba1f1)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.vscode-eslint-disable)
 [![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.vscode-eslint-disable?label=Installs)
@@ -18,7 +17,7 @@
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
 
 ## Features
-1. Select single or **multiple lines** which have rule problems from the extension of ESLint IntelliSense, and it could either disable rules for lines by `ctrl + alt + d` or disable for the entire file by `ctrl + alt + e`.
+1. Select single line or **multiple lines** which have rule problems from the extension of ESLint IntelliSense, and it could either disable rules on selected lines by `ctrl + alt + d` or disable for the entire file by `ctrl + alt + e`.
 2. Disable all problem rules by `ctrl + alt + a`.
 
 
@@ -33,7 +32,7 @@ For single line.
 ![single](assets/1.gif)
 
 
-For multiple lines, press `ctrl + d` to select another pair in other side.
+For multiple lines, you can press `ctrl + d` to select another pair of rules in other side.
 
 ![multiple](assets/2.gif)
 

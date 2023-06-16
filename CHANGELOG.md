@@ -1,9 +1,12 @@
 # Changelog
 
-Tag ranges `v0.0.1...v1.2.1` (18). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+Tag ranges `v0.0.1...v1.2.2` (19). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+
+## v1.2.2 <sub>(2023-06-16)</sub>
+[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.2.1...v1.2.2)
 
 ## v1.2.1 <sub>(2023-03-24)</sub>
-[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.2.0...main)
+[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.2.0...v1.2.1)
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
