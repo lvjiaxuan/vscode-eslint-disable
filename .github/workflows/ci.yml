@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: 18
 
-      - run: npx lvr --release
+      - run: npx lvr release
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
