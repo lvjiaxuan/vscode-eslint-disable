@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  esbuildOptions(options, context) {
+  esbuildOptions(options, _context) {
     options.supported = { 'dynamic-import': false }
   },
 })

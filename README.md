@@ -20,9 +20,8 @@
 1. Select a single line or **multiple lines** which have rule problems from the extension of ESLint IntelliSense, and it can either disable rules on selected lines by `ctrl + alt + d` or disable for the entire file by `ctrl + alt + e`.
 2. Disable all problem rules by `ctrl + alt + a`.
 
-
 > **Note**
-> 
+>
 > It doesn't need to select all text of lines. See the preview below.
 
 ## Preview
@@ -30,7 +29,6 @@
 For single line.
 
 ![single](assets/1.gif)
-
 
 For multiple lines, you can press `ctrl + d` to select another pair of rules on the other side.
 

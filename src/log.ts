@@ -1,10 +1,9 @@
 import { window } from 'vscode'
 
-
 const channel = window.createOutputChannel('VSCode ESLint Disable')
-const getNowFormat = () => {
+function getNowFormat() {
   const nowDate = new Date()
-  return `${ nowDate.getHours() }:${ nowDate.getMinutes() }:${ nowDate.getSeconds() }:${ nowDate.getMilliseconds() }`
+  return `${nowDate.getHours()}:${nowDate.getMinutes()}:${nowDate.getSeconds()}:${nowDate.getMilliseconds()}`
 }
 
 export { channel }
@@ -13,6 +12,6 @@ export default (
   showInformationMessage = false,
   ...informationMessage: string[]
 ) => {
-  channel.appendLine(`[${ getNowFormat() }] - ${ message }`)
+  channel.appendLine(`[${getNowFormat()}] - ${message}`)
   showInformationMessage && void window.showInformationMessage(message, ...informationMessage)
 }
