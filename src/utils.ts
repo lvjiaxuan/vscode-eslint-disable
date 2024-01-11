@@ -32,8 +32,8 @@ export function isDisablingComment(text: string, languageId: string) {
 
   if (text.startsWith(blockLike) || text.startsWith(lineLike)) {
     log('Your selected line is a disabling comment.')
-    return false
+    return true
   }
 
-  return true
+  return false
 }

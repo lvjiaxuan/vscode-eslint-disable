@@ -6,8 +6,6 @@ interface LanguageConfig {
   blockComment: [string, string]
 }
 
-export const languageId = ['javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'html', 'vue', 'coffeescript', 'yaml', 'graphql'] // as const
-
 const languageId2Config: Map<string, LanguageConfig> = new Map([
   ['javascript', { ext: 'js', lineComment: '//', blockComment: ['/*', '*/'] }],
   ['javascriptreact', { ext: 'jsx', lineComment: '//', blockComment: ['/*', '*/'] }],
@@ -19,6 +17,8 @@ const languageId2Config: Map<string, LanguageConfig> = new Map([
   ['yaml', { ext: 'yaml', lineComment: '#', blockComment: ['#', ''] }],
   ['graphql', { ext: 'graphql', lineComment: '#', blockComment: ['#', ''] }],
 ])
+
+export const languageIdExts = [...languageId2Config.values()].map(i => i.ext)
 
 export const blockCommentRegex: { [x: string]: string } = {
   '/*': '\\/\\*',

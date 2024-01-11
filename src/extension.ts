@@ -2,7 +2,7 @@ import path from 'node:path'
 import type { ExtensionContext } from 'vscode'
 import { Position, Range, Selection, SnippetString, TextEditorRevealType, commands, languages, window } from 'vscode'
 import { existFileSync, getTextBylines, isDisablingComment } from './utils'
-import { blockCommentRegex, getBlockComment, getLineComment, languageId } from './languageDefaults'
+import { blockCommentRegex, getBlockComment, getLineComment, languageIdExts } from './languageDefaults'
 import log, { channel } from './log'
 
 const disableSelection = commands.registerCommand('eslint-disable.disable', () => {
@@ -28,16 +28,15 @@ const disableSelection = commands.registerCommand('eslint-disable.disable', () =
   const lineComment = getLineComment(languageId)
   const blockComment = getBlockComment(languageId)
 
-  if (selection.isSingleLine && !isDisablingComment(text, languageId)) {
+  if (selection.isSingleLine) {
     // Insert at previous line.
-    void activeTextEditor.insertSnippet(
+    !isDisablingComment(text, languageId) && void activeTextEditor.insertSnippet(
       new SnippetString(`${lineComment} eslint-disable-next-line \${1:${[...insertRules].join(', ')}}\n`),
       new Position(selection.anchor.line, insertIndex),
     )
   }
   else {
     // Wrap lines and Press `ctrl+d` to edit rules between lines.
-
     void (async () => {
       await activeTextEditor.insertSnippet(
         new SnippetString(`${' '.repeat(insertIndex)}${blockComment[0]} eslint-enable ${[...insertRules].join(', ')} ${blockComment[1]}\n`),
@@ -183,7 +182,7 @@ function getESLintDiagnostics() {
 
   const uri = activeTextEditor.document.uri.toString()
 
-  if (!languageId.includes(path.extname(uri).replace(/^\./, ''))) {
+  if (!languageIdExts.includes(path.extname(uri).replace(/^\./, ''))) {
     log('Sorry, it is a unsupported file extension for now.', true, 'OK')
     return
   }
