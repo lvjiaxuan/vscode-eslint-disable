@@ -1,12 +1,28 @@
 # Changelog
 
-Tag ranges `v0.0.1...v1.2.3` (20). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+Tag ranges `v0.0.1...v1.3.0` (21). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+
+## v1.3.0 <sub>(2024-01-11)</sub>
+[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.2.3...v1.3.0)
+
+### &nbsp;&nbsp;&nbsp;✨ Enhancements
+
+- detected unsupported exts &nbsp;-&nbsp; by @lvjiaxuan [<samp>(02d0f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/02d0fb9)
+- ignore disabling comment &nbsp;-&nbsp; by @lvjiaxuan [<samp>(da957)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/da9572e)
+
+### &nbsp;&nbsp;&nbsp;🐛 Fixes
+
+- basic mistake. damnn &nbsp;-&nbsp; by @lvjiaxuan [<samp>(6db8f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/6db8fa7)
+
+### &nbsp;&nbsp;&nbsp;📝 Documentation
+
+- update &nbsp;-&nbsp; by @lvjiaxuan [<samp>(efc29)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/efc293e)
 
 ## v1.2.3 <sub>(2023-06-16)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.2.2...v1.2.3)
 
-## v1.2.3 <sub>(2023-06-16)</sub>
-[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.2.1...v1.2.3)
+## v1.2.2 <sub>(2023-06-16)</sub>
+[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.2.1...v1.2.2)
 
 ## v1.2.1 <sub>(2023-03-24)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.2.0...v1.2.1)
