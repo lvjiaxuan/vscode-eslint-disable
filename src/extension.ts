@@ -3,7 +3,7 @@ import type { ExtensionContext } from 'vscode'
 import { Position, Range, Selection, SnippetString, TextEditorRevealType, commands, languages, window } from 'vscode'
 import { existFileSync, getTextBylines } from './utils'
 import { blockCommentRegex, getBlockComment, getLineComment } from './languageDefaults'
-import log from './log'
+import log, { channel } from './log'
 
 const disableSelection = commands.registerCommand('eslint-disable.disable', () => {
   const result = getESLintDiagnostics()
@@ -12,7 +12,7 @@ const disableSelection = commands.registerCommand('eslint-disable.disable', () =
 
   const { basename, text, selection, activeTextEditor, selectionDiagnostics } = result
 
-  if (selectionDiagnostics.length) {
+  if (!selectionDiagnostics.length) {
     log(`${basename} - No ESLint problems were found in this selection.`, true, 'OK')
     return
   }
@@ -56,7 +56,7 @@ const disableFile = commands.registerCommand('eslint-disable.entire', async (all
 
   const { basename, selection, activeTextEditor, eslintDiagnostics, selectionDiagnostics } = result
 
-  if (selectionDiagnostics.length) {
+  if (!selectionDiagnostics.length) {
     log(`${basename} - No ESLint problems were found in the file.`, true, 'OK')
     return
   }
@@ -207,4 +207,5 @@ export function deactivate() {
   disableSelection.dispose()
   disableFile.dispose()
   disableAll.dispose()
+  channel.dispose()
 }
