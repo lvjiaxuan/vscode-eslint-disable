@@ -1,22 +1,29 @@
 # Changelog
 
-Tag ranges `v0.0.1...v1.3.0` (21). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+Tag ranges `v0.0.1...v1.3.1` (22). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+
+## v1.3.1 <sub>(2024-01-11)</sub>
+[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.3.0...v1.3.1)
+
+### &nbsp;&nbsp;&nbsp;🐛 Fixes
+
+- update lock &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(d234c)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/d234ca9)
 
 ## v1.3.0 <sub>(2024-01-11)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.2.3...v1.3.0)
 
 ### &nbsp;&nbsp;&nbsp;✨ Enhancements
 
-- detected unsupported exts &nbsp;-&nbsp; by @lvjiaxuan [<samp>(02d0f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/02d0fb9)
-- ignore disabling comment &nbsp;-&nbsp; by @lvjiaxuan [<samp>(da957)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/da9572e)
+- detected unsupported exts &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(02d0f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/02d0fb9)
+- ignore disabling comment &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(da957)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/da9572e)
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
-- basic mistake. damnn &nbsp;-&nbsp; by @lvjiaxuan [<samp>(6db8f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/6db8fa7)
+- basic mistake. damnn &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(6db8f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/6db8fa7)
 
 ### &nbsp;&nbsp;&nbsp;📝 Documentation
 
-- update &nbsp;-&nbsp; by @lvjiaxuan [<samp>(efc29)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/efc293e)
+- update &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(efc29)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/efc293e)
 
 ## v1.2.3 <sub>(2023-06-16)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.2.2...v1.2.3)
@@ -29,94 +36,94 @@ Tag ranges `v0.0.1...v1.3.0` (21). [All GitHub Releases](https://github.com/lvji
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
-- proper inserted line, close #15. &nbsp;-&nbsp; by @lvjiaxuan in [#15](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/15) [<samp>(3cd8a)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/3cd8ac2)
-- match proper comment &nbsp;-&nbsp; by @lvjiaxuan [<samp>(9570c)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/9570cd4)
+- proper inserted line, close #15. &nbsp;-&nbsp; by **lvjiaxuan** in [#15](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/15) [<samp>(3cd8a)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/3cd8ac2)
+- match proper comment &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(9570c)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/9570cd4)
 
 ## v1.2.0 <sub>(2023-03-22)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.1.0...v1.2.0)
 
 ### &nbsp;&nbsp;&nbsp;✨ Enhancements
 
-- back to coding line, close #13. &nbsp;-&nbsp; by @lvjiaxuan in [#13](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/13) [<samp>(43e8a)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/43e8a85)
+- back to coding line, close #13. &nbsp;-&nbsp; by **lvjiaxuan** in [#13](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/13) [<samp>(43e8a)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/43e8a85)
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
-- extra line number &nbsp;-&nbsp; by @lvjiaxuan [<samp>(186c6)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/186c692)
+- extra line number &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(186c6)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/186c692)
 
 ## v1.1.0 <sub>(2023-03-21)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.0.0...v1.1.0)
 
 ### &nbsp;&nbsp;&nbsp;✨ Enhancements
 
-- disable all rules for file. close #14. &nbsp;-&nbsp; by @lvjiaxuan in [#14](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/14) [<samp>(5a611)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/5a611ac)
-- support more language's comment. close #12. &nbsp;-&nbsp; by @lvjiaxuan in [#12](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/12) [<samp>(f2776)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/f277664)
+- disable all rules for file. close #14. &nbsp;-&nbsp; by **lvjiaxuan** in [#14](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/14) [<samp>(5a611)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/5a611ac)
+- support more language's comment. close #12. &nbsp;-&nbsp; by **lvjiaxuan** in [#12](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/12) [<samp>(f2776)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/f277664)
 
 ## v1.0.0 <sub>(2023-03-20)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.3.1...v1.0.0)
 
 ### &nbsp;&nbsp;&nbsp;💥 Breaking Changes
 
-- refactor under diagnostic. &nbsp;-&nbsp; by @lvjiaxuan [<samp>(1bcde)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/1bcde1e)
+- refactor under diagnostic. &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(1bcde)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/1bcde1e)
 
 ### &nbsp;&nbsp;&nbsp;✨ Enhancements
 
-- respect ignored file &nbsp;-&nbsp; by @lvjiaxuan [<samp>(22ff8)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/22ff809)
+- respect ignored file &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(22ff8)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/22ff809)
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
-- state sky &nbsp;-&nbsp; by @lvjiaxuan [<samp>(d1479)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/d1479c5)
+- state sky &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(d1479)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/d1479c5)
 
 ### &nbsp;&nbsp;&nbsp;📝 Documentation
 
-- update &nbsp;-&nbsp; by @lvjiaxuan [<samp>(e88f5)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/e88f5b0)
+- update &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(e88f5)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/e88f5b0)
 
 ## v0.3.1 <sub>(2023-03-13)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.3.0...v0.3.1)
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
-- im not sure &nbsp;-&nbsp; by @lvjiaxuan [<samp>(d4d5d)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/d4d5d39)
+- im not sure &nbsp;-&nbsp; by **lvjiaxuan** [<samp>(d4d5d)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/d4d5d39)
 
 ## v0.3.0 <sub>(2023-03-09)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.2.1...v0.3.0)
 
 ### &nbsp;&nbsp;&nbsp;✨ Enhancements
 
-- support flat connfig. close #9. &nbsp;-&nbsp; by @lvjiaxuan in [#9](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/9) [<samp>(4d7f0)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/4d7f058)
+- support flat connfig. close #9. &nbsp;-&nbsp; by **lvjiaxuan** in [#9](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/9) [<samp>(4d7f0)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/4d7f058)
 
 ## v0.2.1 <sub>(2023-03-05)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.2.0...v0.2.1)
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
-- cache outdate. &nbsp;-&nbsp; by @lvjiaxuan [<samp>(a83ee)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/a83ee61)
+- cache outdate. &nbsp;-&nbsp; by **unknown** [<samp>(a83ee)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/a83ee61)
 
 ## v0.2.0 <sub>(2023-02-27)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.1.0...v0.2.0)
 
 ### &nbsp;&nbsp;&nbsp;✨ Enhancements
 
-- cache ESLint path. close #7 &nbsp;-&nbsp; by @lvjiaxuan in [#7](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/7) [<samp>(0f611)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/0f611cb)
+- cache ESLint path. close #7 &nbsp;-&nbsp; by **lvjiaxuan** in [#7](https://github.com/lvjiaxuan/vscode-eslint-disable/issues/7) [<samp>(0f611)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/0f611cb)
 
 ## v0.1.0 <sub>(2023-02-16)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.0.9...v0.1.0)
 
 ### &nbsp;&nbsp;&nbsp;✨ Enhancements
 
-- remove snippets and optimize pre-linting &nbsp;-&nbsp; by @lvjiaxuan [<samp>(56f4f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/56f4ffb)
-- disable for entire file. &nbsp;-&nbsp; by @lvjiaxuan [<samp>(c1c8a)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/c1c8a5e)
+- remove snippets and optimize pre-linting &nbsp;-&nbsp; by **lvjiaxuan 吕嘉轩** [<samp>(56f4f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/56f4ffb)
+- disable for entire file. &nbsp;-&nbsp; by **lvjiaxuan 吕嘉轩** [<samp>(c1c8a)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/c1c8a5e)
 
 ### &nbsp;&nbsp;&nbsp;⚡️ Performance
 
-- less clear cache. &nbsp;-&nbsp; by @lvjiaxuan [<samp>(3a20d)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/3a20d80)
+- less clear cache. &nbsp;-&nbsp; by **lvjiaxuan 吕嘉轩** [<samp>(3a20d)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/3a20d80)
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
-- dup-linting on `onDidChangeActiveTextEditor`. &nbsp;-&nbsp; by @lvjiaxuan [<samp>(bcb0f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/bcb0fa2)
+- dup-linting on `onDidChangeActiveTextEditor`. &nbsp;-&nbsp; by **lvjiaxuan 吕嘉轩** [<samp>(bcb0f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/bcb0fa2)
 
 ### &nbsp;&nbsp;&nbsp;📝 Documentation
 
-- update readme. &nbsp;-&nbsp; by @lvjiaxuan [<samp>(15b80)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/15b80d6)
+- update readme. &nbsp;-&nbsp; by **lvjiaxuan 吕嘉轩** [<samp>(15b80)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/15b80d6)
 
 ## v0.0.9 <sub>(2023-02-01)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v0.0.8...v0.0.9)
@@ -126,7 +133,7 @@ Tag ranges `v0.0.1...v1.3.0` (21). [All GitHub Releases](https://github.com/lvji
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
-- dedup. &nbsp;-&nbsp; by @lvjiaxuan [<samp>(a068f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/a068fb4)
+- dedup. &nbsp;-&nbsp; by **lvjiaxuan 吕嘉轩** [<samp>(a068f)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/a068fb4)
 
 ### &nbsp;&nbsp;&nbsp;📝 Documentation
 

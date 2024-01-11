@@ -3,7 +3,7 @@
   "name": "vscode-eslint-disable",
   "displayName": "ESLint Disable",
   "type": "module",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Use hotkeys to insert the corresponding disabling rules comment.",
   "license": "MIT",
   "repository": {
