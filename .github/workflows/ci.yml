@@ -7,17 +7,11 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - run: npx lvr release
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    permissions:
+      contents: write
+      id-token: write
+    uses: lvjiaxuan/github-action-templates/.github/workflows/lvr-release.yml@main
+    secrets: inherit
 
   publish:
     runs-on: ubuntu-latest
@@ -27,8 +21,6 @@ jobs:
           fetch-depth: 0
 
       - uses: actions/setup-node@v3
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org
