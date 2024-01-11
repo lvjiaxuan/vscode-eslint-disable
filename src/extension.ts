@@ -2,7 +2,7 @@ import path from 'node:path'
 import type { ExtensionContext } from 'vscode'
 import { Position, Range, Selection, SnippetString, TextEditorRevealType, commands, languages, window } from 'vscode'
 import { existFileSync, getTextBylines } from './utils'
-import { blockCommentRegex, getBlockComment, getLineComment } from './languageDefaults'
+import { blockCommentRegex, getBlockComment, getLineComment, languageId } from './languageDefaults'
 import log, { channel } from './log'
 
 const disableSelection = commands.registerCommand('eslint-disable.disable', () => {
@@ -179,8 +179,14 @@ function getESLintDiagnostics() {
   if (!existFileSync(fileName))
     return
 
-  const { selection /* selections might be supported later */ } = activeTextEditor
   const uri = activeTextEditor.document.uri.toString()
+
+  if (!languageId.includes(path.extname(uri).replace(/^\./, ''))) {
+    log('Sorry, it is a unsupported file extension for now.', true, 'OK')
+    return
+  }
+
+  const { selection /* selections might be supported later */ } = activeTextEditor
   const basename = path.basename(uri)
 
   const text = getTextBylines(selection.start.line, selection.end.line)

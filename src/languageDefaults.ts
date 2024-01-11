@@ -6,6 +6,8 @@ interface LanguageConfig {
   blockComment: [string, string]
 }
 
+export const languageId = ['javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'html', 'vue', 'coffeescript', 'yaml', 'graphql'] // as const
+
 const languageId2Config: Map<string, LanguageConfig> = new Map([
   ['javascript', { ext: 'js', lineComment: '//', blockComment: ['/*', '*/'] }],
   ['javascriptreact', { ext: 'jsx', lineComment: '//', blockComment: ['/*', '*/'] }],
