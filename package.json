@@ -14,7 +14,7 @@
     "Other",
     "Snippets"
   ],
-  "main": "./dist/extension.js",
+  "main": "./dist/extension.cjs",
   "icon": "assets/logo.png",
   "engines": {
     "vscode": "^1.60.0"

@@ -5,32 +5,23 @@ import { existFileSync, getTextBylines } from './utils'
 import { blockCommentRegex, getBlockComment, getLineComment } from './languageDefaults'
 import log from './log'
 
-/* eslint-disable ts/no-use-before-define */
-export function activate(context: ExtensionContext) {
-  context.subscriptions.push(disableForLines)
-  context.subscriptions.push(disableForFile)
-  context.subscriptions.push(disableAllForFile)
-}
-
-export function deactivate() {
-  disableForLines.dispose()
-  disableForFile.dispose()
-  disableAllForFile.dispose()
-}
-/* eslint-enable ts/no-use-before-define */
-
-const disableForLines = commands.registerCommand('eslint-disable.disable', () => {
+const disableSelection = commands.registerCommand('eslint-disable.disable', () => {
   const result = getESLintDiagnostics()
   if (!result)
     return
 
-  const { text, selection, activeTextEditor, /* eslintDiagnostics */ selectionDiagnostics } = result
+  const { basename, text, selection, activeTextEditor, selectionDiagnostics } = result
+
+  if (selectionDiagnostics.length) {
+    log(`${basename} - No ESLint problems were found in this selection.`, true, 'OK')
+    return
+  }
 
   let insertIndex = 0
   while (text.charAt(insertIndex) === ' ')
     insertIndex++
 
-  const insertRules = new Set(selectionDiagnostics.map(item => item?.code?.value))
+  const insertRules = new Set(selectionDiagnostics.map(item => typeof item.code === 'object' ? item.code.value : item.code))
 
   const lineComment = getLineComment(activeTextEditor.document.languageId)
   const blockComment = getBlockComment(activeTextEditor.document.languageId)
@@ -58,15 +49,19 @@ const disableForLines = commands.registerCommand('eslint-disable.disable', () =>
   }
 })
 
-const disableForFile = commands.registerCommand('eslint-disable.entire', async (allRules: false) => {
-  const result = getESLintDiagnostics(allRules)
+const disableFile = commands.registerCommand('eslint-disable.entire', async (allRules = false) => {
+  const result = getESLintDiagnostics()
   if (!result)
     return
 
-  const { selection, activeTextEditor, eslintDiagnostics, selectionDiagnostics } = result
+  const { basename, selection, activeTextEditor, eslintDiagnostics, selectionDiagnostics } = result
 
-  // @ts-expect-error
-  const insertRules = new Set((allRules ? eslintDiagnostics : selectionDiagnostics).map(item => item.code.value as string))
+  if (selectionDiagnostics.length) {
+    log(`${basename} - No ESLint problems were found in the file.`, true, 'OK')
+    return
+  }
+
+  const insertRules = new Set((allRules ? eslintDiagnostics : selectionDiagnostics).map(item => typeof item.code === 'object' ? item.code.value! : item.code!))
 
   const blockComment = getBlockComment(activeTextEditor.document.languageId)
 
@@ -102,7 +97,7 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
      * 4. 尾行无值，最近有值尾行是end comment：删除，然后替换当前行
      */
 
-    // Delete existing comments.
+    // Delete the existing comments.
     await activeTextEditor.edit((editor) => {
       editor.delete(new Range(
         new Position(0, 0),
@@ -170,36 +165,27 @@ const disableForFile = commands.registerCommand('eslint-disable.entire', async (
   )
 })
 
-const disableAllForFile = commands.registerCommand('eslint-disable.all', () => {
-  // ...
+const disableAll = commands.registerCommand('eslint-disable.all', () => {
   void commands.executeCommand('eslint-disable.entire', true)
 })
 
-function getESLintDiagnostics(allRules = false) {
+function getESLintDiagnostics() {
   const { activeTextEditor } = window
 
-  if (!activeTextEditor) {
-    log('No activeTextEditor found, please try again.', true, 'OK')
+  if (!activeTextEditor)
     return
-  }
 
   const { fileName } = activeTextEditor.document
-  if (!existFileSync(fileName)) {
-    log(`Not a exist file: ${fileName}`)
+  if (!existFileSync(fileName))
     return
-  }
 
+  const { selection /* selections might be supported later */ } = activeTextEditor
   const uri = activeTextEditor.document.uri.toString()
-
-  // activeTextEditor.selections would supported in later version.
-  const { selection } = activeTextEditor
   const basename = path.basename(uri)
 
   const text = getTextBylines(selection.start.line, selection.end.line)
-  if (!text?.replace(/\n|\r/g, '')) {
-    log(`${basename} - No content to disable.`, true, 'OK')
+  if (!text?.replace(/\n|\r/g, ''))
     return
-  }
 
   const diagnostics = languages.getDiagnostics()
   const diagnosticOfUri = diagnostics.find(item => item[0].toString() === uri)
@@ -207,15 +193,18 @@ function getESLintDiagnostics(allRules = false) {
   const selectionDiagnostics = eslintDiagnostics.filter(item =>
     selection.start.line <= item.range.start.line && item.range.start.line <= selection.end.line)
 
-  if (allRules && !eslintDiagnostics.length) {
-    log(`${basename} - No problems found on this file.`, true, 'OK')
-    return
-  }
+  return { basename, text, selection, activeTextEditor, eslintDiagnostics, selectionDiagnostics }
+}
 
-  if (!allRules && !selectionDiagnostics.length) {
-    log(`${basename} - No problems found on this selection.`, true, 'OK')
-    return
-  }
+export function activate(context: ExtensionContext) {
+  context.subscriptions.push(disableSelection)
+  context.subscriptions.push(disableFile)
+  context.subscriptions.push(disableAll)
+  log('VSCode ESLint Disable extension is activated.')
+}
 
-  return { text, selection, activeTextEditor, eslintDiagnostics, selectionDiagnostics }
+export function deactivate() {
+  disableSelection.dispose()
+  disableFile.dispose()
+  disableAll.dispose()
 }
