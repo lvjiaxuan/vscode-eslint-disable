@@ -1,5 +1,7 @@
 import fs from 'node:fs'
 import vscode from 'vscode'
+import { getBlockComment, getLineComment } from './languageDefaults'
+import log from './log'
 
 export function getTextBylines(startLine: number, endLine?: number) {
   return vscode.window.activeTextEditor?.document.getText(
@@ -19,4 +21,19 @@ export function existFileSync(path: string) {
   }
   catch {}
   return false
+}
+
+/**
+ * use to single line.
+ */
+export function isDisablingComment(text: string, languageId: string) {
+  const blockLike = `${getBlockComment(languageId)[0]} eslint-disable`
+  const lineLike = `${getLineComment(languageId)} eslint-disable`
+
+  if (text.startsWith(blockLike) || text.startsWith(lineLike)) {
+    log('Your selected line is a disabling comment.')
+    return false
+  }
+
+  return true
 }

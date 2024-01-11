@@ -1,7 +1,7 @@
 import path from 'node:path'
 import type { ExtensionContext } from 'vscode'
 import { Position, Range, Selection, SnippetString, TextEditorRevealType, commands, languages, window } from 'vscode'
-import { existFileSync, getTextBylines } from './utils'
+import { existFileSync, getTextBylines, isDisablingComment } from './utils'
 import { blockCommentRegex, getBlockComment, getLineComment, languageId } from './languageDefaults'
 import log, { channel } from './log'
 
@@ -23,10 +23,12 @@ const disableSelection = commands.registerCommand('eslint-disable.disable', () =
 
   const insertRules = new Set(selectionDiagnostics.map(item => typeof item.code === 'object' ? item.code.value : item.code))
 
-  const lineComment = getLineComment(activeTextEditor.document.languageId)
-  const blockComment = getBlockComment(activeTextEditor.document.languageId)
+  const languageId = activeTextEditor.document.languageId
 
-  if (selection.isSingleLine) {
+  const lineComment = getLineComment(languageId)
+  const blockComment = getBlockComment(languageId)
+
+  if (selection.isSingleLine && !isDisablingComment(text, languageId)) {
     // Insert at previous line.
     void activeTextEditor.insertSnippet(
       new SnippetString(`${lineComment} eslint-disable-next-line \${1:${[...insertRules].join(', ')}}\n`),
