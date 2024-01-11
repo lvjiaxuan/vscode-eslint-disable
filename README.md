@@ -16,13 +16,12 @@
 [![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.eslint-disable?label=Deprecated%20Identifier%20Installs)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
 
-## Features
-1. Select a single line or **multiple lines** which have rule problems from the extension of ESLint IntelliSense, and it can either disable rules on selected lines by `ctrl + alt + d` or disable for the entire file by `ctrl + alt + e`.
-2. Disable all problem rules by `ctrl + alt + a`.
+## Usage
+1. Select a single line or **multiple lines** that have rule problems from the ESLint extension's *IntelliSense*, and you can either disable rules on selected lines by `ctrl + alt + d` or disable them for the entire file by `ctrl + alt + e`.
+2. Disable all rule problems by `ctrl + alt + a`.
 
-> **Note**
->
-> It doesn't need to select all text of lines. See the preview below.
+> [!TIP]
+> It doesn't need to select all the text on the selected lines, or even select, just only a cursor focus can works. See the preview below.
 
 ## Preview
 
@@ -33,7 +32,3 @@ For single line.
 For multiple lines, you can press `ctrl + d` to select another pair of rules on the other side.
 
 ![multiple](assets/2.gif)
-
-## TODO
-
-- [ ] Support multi-selections disabled at the same action.
