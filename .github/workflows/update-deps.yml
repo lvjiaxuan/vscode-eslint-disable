@@ -1,0 +1,10 @@
+name: Update Dependencies
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: 0 0 * * SAT
+
+jobs:
+  update-deps:
+    uses: lvjiaxuan/github-action-templates/.github/workflows/update-deps.yml@main
