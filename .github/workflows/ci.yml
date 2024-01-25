@@ -15,7 +15,6 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    environment: VSCE
     steps:
       - uses: actions/checkout@v4
 
@@ -24,12 +23,8 @@ jobs:
           node-version: 18.x
           registry-url: https://registry.npmjs.org
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - run: |
-          pnpm i @antfu/ni -g
-          pnpm i @vscode/vsce -g
-          ni
+          npm i @antfu/ni -g
+          npm i @vscode/vsce -g
+          nci
           vsce publish -p ${{ secrets.VSCE_TOKEN }}
