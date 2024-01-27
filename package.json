@@ -87,9 +87,9 @@
     "publish": "vsce publish"
   },
   "devDependencies": {
-    "@lvjiaxuan/eslint-config": "^1.6.0",
-    "@types/node": "^20.10.8",
-    "@types/vscode": "1.60.0",
+    "@lvjiaxuan/eslint-config": "^1.7.0",
+    "@types/node": "^20.11.7",
+    "@types/vscode": "1.85.0",
     "eslint": "^8.56.0",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
