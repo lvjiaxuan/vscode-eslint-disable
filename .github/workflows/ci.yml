@@ -25,5 +25,5 @@ jobs:
 
       - run: |
           npm i @vscode/vsce -g
-          npm i
-          vsce publish -p ${{ secrets.VSCE_TOKEN }}
+          npm i -O @rollup/rollup-linux-x64-gnu
+          vsce publish -p ${{ secrets.VSCE_PUBLISH }}
