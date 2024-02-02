@@ -17,11 +17,11 @@
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
 
 ## Usage
-1. Select a single line or **multiple lines** that have rule problems from the ESLint extension's *IntelliSense*, and you can either disable rules on selected lines by `ctrl + alt + d` or disable them for the entire file by `ctrl + alt + e`.
-2. Disable all rule problems by `ctrl + alt + a`.
+1. Select a single line or **multiple lines** that have rule problems from the ESLint extension's *IntelliSense*, and you can either disable these rules for selected lines by `ctrl + alt + d` or for the entire file by `ctrl + alt + e`.
+2. Disable all rule problems for the entrie file by `ctrl + alt + a`.
 
 > [!TIP]
-> It doesn't need to select all the text on the selected lines, or even select, just only a cursor focus can works. See the preview below.
+> It doesn't always have to select characters, even just only a cursor focus can works. See the preview below.
 
 ## Preview
 
