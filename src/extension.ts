@@ -62,7 +62,7 @@ const disableFile = commands.registerCommand('eslint-disable.entire', async (all
     return
   }
 
-  const insertRules = new Set((allRules ? eslintDiagnostics : selectionDiagnostics).map(item => typeof item.code === 'object' ? item.code.value! : item.code!))
+  const insertRules = new Set((allRules ? eslintDiagnostics : selectionDiagnostics).map(item => typeof item.code === 'object' ? item.code.value : item.code!))
 
   const blockComment = getBlockComment(activeTextEditor.document.languageId)
 
