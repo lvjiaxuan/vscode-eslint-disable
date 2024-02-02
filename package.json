@@ -79,9 +79,9 @@
   },
   "scripts": {
     "compile": "tsup src/extension.ts --external=vscode --clean",
-    "dev": "nr compile --watch --sourcemap",
-    "vscode:prepublish": "nr compile",
-    "pretest": "nr compile && nr lint",
+    "dev": "npm run compile --watch --sourcemap",
+    "vscode:prepublish": "npm run compile",
+    "pretest": "npm run compile && npm run lint",
     "lint": "eslint .",
     "pack": "vsce package",
     "publish": "vsce publish"
@@ -91,7 +91,16 @@
     "@types/node": "^20.11.7",
     "@types/vscode": "1.85.0",
     "eslint": "^8.56.0",
+    "simple-git-hooks": "^2.9.0",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3"
+  },
+  "simple-git-hooks": {
+    "pre-commit": [
+      "npx lint-staged"
+    ]
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
   }
 }

@@ -24,7 +24,6 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - run: |
-          npm i @antfu/ni -g
           npm i @vscode/vsce -g
-          nci
+          npm i
           vsce publish -p ${{ secrets.VSCE_TOKEN }}
