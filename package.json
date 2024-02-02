@@ -4,7 +4,7 @@
   "displayName": "ESLint Disable",
   "type": "module",
   "version": "1.3.1",
-  "description": "Use hotkeys to insert the corresponding disabling rules comment.",
+  "description": "Use hotkeys to insert the corresponding ESLint disabling rules comment.",
   "license": "MIT",
   "repository": {
     "type": "git",

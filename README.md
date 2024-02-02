@@ -6,7 +6,7 @@
 
 <hr />
 
-<p align="center">Use hotkeys to insert the corresponding disabling rules comment.</p>
+<p align="center">Use hotkeys to insert the corresponding ESLint disabling rules comment.</p>
 
 ![](https://github.com/lvjiaxuan/vscode-eslint-disable/actions/workflows/ci.yml/badge.svg)
 [![](https://img.shields.io/visual-studio-marketplace/v/lvjiaxuan.vscode-eslint-disable?color=%232ba1f1&logo=visual-studio-code&logoColor=%232ba1f1)
