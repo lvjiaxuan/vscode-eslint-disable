@@ -88,11 +88,11 @@
   },
   "devDependencies": {
     "@lvjiaxuan/eslint-config": "^1.8.2",
-    "@types/node": "^20.11.17",
+    "@types/node": "^20.11.19",
     "@types/vscode": "1.86.0",
     "eslint": "^8.56.0",
     "simple-git-hooks": "^2.9.0",
-    "tsup": "^8.0.1",
+    "tsup": "^8.0.2",
     "typescript": "^5.3.3"
   },
   "simple-git-hooks": {
