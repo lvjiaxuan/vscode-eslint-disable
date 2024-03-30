@@ -91,7 +91,7 @@
     "@types/node": "^20.11.30",
     "@types/vscode": "1.87.0",
     "eslint": "^8.57.0",
-    "simple-git-hooks": "^2.11.0",
+    "simple-git-hooks": "^2.11.1",
     "tsup": "^8.0.2",
     "typescript": "^5.4.3"
   },
