@@ -87,13 +87,13 @@
     "publish": "vsce publish"
   },
   "devDependencies": {
-    "@lvjiaxuan/eslint-config": "^1.9.1",
-    "@types/node": "^20.12.5",
+    "@lvjiaxuan/eslint-config": "^1.10.1",
+    "@types/node": "^20.12.7",
     "@types/vscode": "1.88.0",
     "eslint": "^9.0.0",
     "simple-git-hooks": "^2.11.1",
     "tsup": "^8.0.2",
-    "typescript": "^5.4.4"
+    "typescript": "^5.4.5"
   },
   "simple-git-hooks": {
     "pre-commit": [
