@@ -9,12 +9,11 @@
 <p align="center">Use hotkeys to insert the corresponding ESLint disabling rules comment.</p>
 
 ![](https://github.com/lvjiaxuan/vscode-eslint-disable/actions/workflows/ci.yml/badge.svg)
-[![](https://img.shields.io/visual-studio-marketplace/v/lvjiaxuan.vscode-eslint-disable?color=%232ba1f1&logo=visual-studio-code&logoColor=%232ba1f1)
+[![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/lvjiaxuan.vscode-eslint-disable?color=%232ba1f1&logo=visual-studio-code&logoColor=%232ba1f1)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.vscode-eslint-disable)
-[![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.vscode-eslint-disable?label=Installs)
+[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.vscode-eslint-disable?label=Installs&logo=visualstudiocode&logoColor=%232ba1f1)
 ](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.vscode-eslint-disable)
-[![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/lvjiaxuan.eslint-disable?label=Deprecated%20Identifier%20Installs)
-](https://marketplace.visualstudio.com/items?itemName=lvjiaxuan.eslint-disable)
+[![GitHub Repo stars](https://img.shields.io/github/stars/lvjiaxuan/vscode-eslint-disable)](https://github.com/lvjiaxuan/vscode-eslint-disable)
 
 ## Usage
 1. Select a single line or **multiple lines** that have rule problems from the ESLint extension's *IntelliSense*, and you can either disable these rules for selected lines by `ctrl + alt + d` or for the entire file by `ctrl + alt + e`.
