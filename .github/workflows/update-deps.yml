@@ -8,3 +8,5 @@ on:
 jobs:
   update-deps:
     uses: lvjiaxuan/github-action-templates/.github/workflows/update-deps.yml@main
+    with:
+      mode: pr
