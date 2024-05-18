@@ -88,9 +88,9 @@
   },
   "devDependencies": {
     "@lvjiaxuan/eslint-config": "^1.10.1",
-    "@types/node": "^20.12.11",
+    "@types/node": "^20.12.12",
     "@types/vscode": "1.89.0",
-    "eslint": "^9.2.0",
+    "eslint": "^9.3.0",
     "simple-git-hooks": "^2.11.1",
     "tsup": "^8.0.2",
     "typescript": "^5.4.5"
