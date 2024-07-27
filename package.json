@@ -88,12 +88,12 @@
   },
   "devDependencies": {
     "@lvjiaxuan/eslint-config": "^1.11.0",
-    "@types/node": "^20.14.11",
+    "@types/node": "^20.14.12",
     "@types/vscode": "1.91.0",
-    "eslint": "^9.7.0",
+    "eslint": "^9.8.0",
     "simple-git-hooks": "^2.11.1",
-    "tsup": "^8.2.0",
-    "typescript": "^5.5.3"
+    "tsup": "^8.2.3",
+    "typescript": "^5.5.4"
   },
   "simple-git-hooks": {
     "pre-commit": [
