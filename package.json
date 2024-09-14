@@ -4,7 +4,7 @@
   "displayName": "ESLint Disable",
   "type": "module",
   "version": "1.3.2",
-  "description": "Use hotkeys to insert the corresponding ESLint disabling rules comment.",
+  "description": "Intelligently disable ESLint rules for VS Code.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -24,17 +24,17 @@
     "commands": [
       {
         "command": "eslint-disable.disable",
-        "title": "disable rule(s) for line(s)",
+        "title": "disable rule(s) for line(s).",
         "category": "ESLint Disable"
       },
       {
         "command": "eslint-disable.entire",
-        "title": "disable rule(s) for entire file",
+        "title": "disable rule(s) of line(s) for entire file.",
         "category": "ESLint Disable"
       },
       {
         "command": "eslint-disable.all",
-        "title": "disable all rules for entire file",
+        "title": "disable all rule(s) for entire file.",
         "category": "ESLint Disable"
       }
     ],
