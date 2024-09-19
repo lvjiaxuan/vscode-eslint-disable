@@ -1,6 +1,18 @@
 # Changelog
 
-Tag ranges `v0.0.1...v1.3.2` (23). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+Tag ranges `v0.0.1...v1.4.0` (24). [All GitHub Releases](https://github.com/lvjiaxuan/vscode-eslint-disable/releases).
+
+## v1.4.0 <sub>(2024-09-19)</sub>
+[Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.3.2...v1.4.0)
+
+### &nbsp;&nbsp;&nbsp;✨ Enhancements
+
+- set `activationEvents` to empty since vsc@1.74.0 &nbsp;-&nbsp; by @lvjiaxuan [<samp>(d2aaa)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/d2aaaa0)
+
+### &nbsp;&nbsp;&nbsp;📝 Documentation
+
+- update badges &nbsp;-&nbsp; by @lvjiaxuan [<samp>(4cf02)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/4cf02d1)
+- update &nbsp;-&nbsp; by @lvjiaxuan [<samp>(a04e5)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/a04e555)
 
 ## v1.3.2 <sub>(2024-02-02)</sub>
 [Compare changes](https://github.com/lvjiaxuan/vscode-eslint-disable/compare/v1.3.1...v1.3.2)
@@ -177,7 +189,7 @@ Tag ranges `v0.0.1...v1.3.2` (23). [All GitHub Releases](https://github.com/lvji
 
 ### &nbsp;&nbsp;&nbsp;🐛 Fixes
 
-- ignore \n &nbsp;-&nbsp; by @lvjiaxuan [<samp>(\r)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/\r)
+- ignore \n &nbsp;-&nbsp; by **191c85d** [<samp>(\r)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/\r)
 - ignore lines without problems &nbsp;-&nbsp; by @lvjiaxuan [<samp>(6250a)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/6250ad3)
 - block comment with full problems &nbsp;-&nbsp; by @lvjiaxuan [<samp>(e6773)</samp>](https://github.com/lvjiaxuan/vscode-eslint-disable/commit/e6773dc)
 
