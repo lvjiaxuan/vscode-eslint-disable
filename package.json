@@ -3,7 +3,8 @@
   "name": "vscode-eslint-disable",
   "displayName": "ESLint Disable",
   "type": "module",
-  "version": "1.4.0",
+  "version": "1.4.1",
+  "packageManager": "pnpm@9.10.0",
   "description": "Intelligently disable ESLint rules for VS Code.",
   "license": "MIT",
   "repository": {
@@ -76,18 +77,18 @@
     ]
   },
   "scripts": {
-    "compile": "tsup src/extension.ts --external=vscode --clean",
-    "dev": "npm run compile --watch --sourcemap",
-    "vscode:prepublish": "npm run compile",
-    "pretest": "npm run compile && npm run lint",
+    "build": "tsup src/extension.ts --external=vscode --clean",
+    "dev": "pnpm run build --watch --sourcemap",
+    "vscode:prepublish": "pnpm run build",
     "lint": "eslint .",
-    "pack": "vsce package",
-    "publish": "vsce publish"
+    "pack": "vsce package --no-dependencies",
+    "publish": "vsce publish --no-dependencies"
   },
   "devDependencies": {
     "@lvjiaxuan/eslint-config": "^1.12.1",
     "@types/node": "^22.5.5",
-    "@types/vscode": "1.93.0",
+    "@types/vscode": "1.75.0",
+    "@vscode/vsce": "^3.1.0",
     "eslint": "^9.10.0",
     "simple-git-hooks": "^2.11.1",
     "tsup": "^8.3.0",
