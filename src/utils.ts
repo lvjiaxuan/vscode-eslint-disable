@@ -31,7 +31,7 @@ export function isDisablingComment(text: string, languageId: string) {
   const lineLike = `${getLineComment(languageId)} eslint-disable`
 
   if (text.startsWith(blockLike) || text.startsWith(lineLike)) {
-    log('Your selected line is a disabling comment.')
+    log('The selected line is a disabling comment.')
     return true
   }
 

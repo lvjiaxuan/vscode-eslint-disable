@@ -1,19 +1,21 @@
-import path from 'node:path'
 import type { ExtensionContext } from 'vscode'
-import { Position, Range, Selection, SnippetString, TextEditorRevealType, commands, languages, window } from 'vscode'
-import { existFileSync, getTextBylines, isDisablingComment } from './utils'
+import path from 'node:path'
+import { commands, languages, Position, Range, Selection, SnippetString, TextEditorRevealType, window } from 'vscode'
 import { blockCommentRegex, getBlockComment, getLineComment, languageIdExts } from './languageDefaults'
 import log, { channel } from './log'
+import { existFileSync, getTextBylines, isDisablingComment } from './utils'
 
 const disableSelection = commands.registerCommand('eslint-disable.disable', () => {
   const result = getESLintDiagnostics()
-  if (!result)
+  if (!result) {
+    log('ESLint extension is not ready.')
     return
+  }
 
   const { basename, text, selection, activeTextEditor, selectionDiagnostics } = result
 
   if (!selectionDiagnostics.length) {
-    log(`${basename} - No ESLint problems were found in this selection.`, true, 'OK')
+    log(`${basename} - No ESLint problems were found in this selection.`, 'OK')
     return
   }
 
@@ -58,7 +60,7 @@ const disableFile = commands.registerCommand('eslint-disable.entire', async (all
   const { basename, selection, activeTextEditor, eslintDiagnostics, selectionDiagnostics } = result
 
   if (!selectionDiagnostics.length) {
-    log(`${basename} - No ESLint problems were found in the file.`, true, 'OK')
+    log(`${basename} - No ESLint problems were found in the file.`, 'OK')
     return
   }
 
@@ -183,7 +185,7 @@ function getESLintDiagnostics() {
   const uri = activeTextEditor.document.uri.toString()
 
   if (!languageIdExts.includes(path.extname(uri).replace(/^\./, ''))) {
-    log('Sorry, it is a unsupported file extension for now.', true, 'OK')
+    log('Sorry, it is a unsupported file extension for now.', 'OK')
     return
   }
 

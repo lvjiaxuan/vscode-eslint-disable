@@ -39,5 +39,6 @@
     "jsonc",
     "yaml",
     "toml"
-  ]
+  ],
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }
